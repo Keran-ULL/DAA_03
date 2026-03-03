@@ -61,4 +61,3 @@ class GeneradorVectores : public GeneradorInstancias {
 };
 
 #endif
-ndif
