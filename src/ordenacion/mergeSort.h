@@ -17,7 +17,7 @@
 #include "../core/divideYvenceras.h"
 #include "../ordenacion/InstanciaVector.h"
 #include "../ordenacion/SolucionVector.h"
-#include "../exceptions.h"
+#include "../exceptions/exceptions.h"
 #include <vector>
 #include <algorithm>
 
@@ -71,4 +71,5 @@ class MergeSort : public DivideYVenceras<InstanciaVector<T>, SolucionVector<T>> 
 };
 
 #endif
+
 

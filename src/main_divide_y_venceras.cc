@@ -13,15 +13,15 @@
 
 #include <iostream>
 
-#include "help_functions.h"
-#include "exceptions.h"
+#include "help/help_functions.h"
+#include "exceptions/exceptions.h"
 
 #include "utils/GeneradorVectores.h"
 #include "utils/MedidorTiempos.h"
 #include "utils/TablaResultados.h"
 
-#include "ordenacion/MergeSort.h"
-#include "ordenacion/QuickSort.h"
+#include "ordenacion/mergeSort.h"
+#include "ordenacion/quickSort.h"
 
 using namespace std;
 

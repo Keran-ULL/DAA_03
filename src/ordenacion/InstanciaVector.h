@@ -15,7 +15,7 @@
 #define INSTANCIA_VECTOR_H
 
 #include "../core/Instancia.h"
-#include "../exceptions.h"
+#include "../exceptions/exceptions.h"
 #include <vector>
 #include <iostream>
 

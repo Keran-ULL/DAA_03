@@ -1,7 +1,7 @@
 #ifndef DIVIDE_Y_VENCERAS_HPP
 #define DIVIDE_Y_VENCERAS_HPP
 
-#include "Algoritmo.hpp"
+#include "algoritmo.h"
 #include <memory>
 #include <utility>
 
