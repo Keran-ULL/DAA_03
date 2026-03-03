@@ -87,8 +87,8 @@ protected:
         const SolucionVector<T>& s2
     ) const override {
 
-        const auto& menores = s1.getDatos();
-        const auto& mayores = s2.getDatos();
+        const auto& menores = s1.datos();
+        const auto& mayores = s2.datos();
 
         std::vector<T> resultado;
         resultado.reserve(menores.size() + mayores.size());
