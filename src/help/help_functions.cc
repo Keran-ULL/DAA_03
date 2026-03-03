@@ -6,179 +6,137 @@
 ** Curso: 3º
 ** Práctica 1: Complejidad Computacional
 ** Autor: Marco Pérez Padilla, Keran Miranda González
-** Correo: alu0101469348@ull.edu.es, alu0101485904@ull.edu.es
-** Fecha: 01/02/2026
-
-** Archivo help.h: Funciones de ayuda
+** Fecha: 03/03/2026
 **
-** Referencias:
-**      Enlaces de interés
-
-** Historial de revisiones:
-**      01/02/2026 - Creación (primera versión) del código
+** Archivo help_functions.cc: Implementación de funciones auxiliares
 **/
 
+#include "help_functions.h"
 #include <iostream>
 #include <sstream>
 #include <algorithm>
 #include <cctype>
-#include <regex>
-#include "help_functions.h"
 
-/**
- * @brief Prints Help to the user
- */
-void Help() {
-  std::cout << "RAM MACHINE SIMULATOR" << std::endl;
-  std::cout << "Simulates the execution of a RAM program with input and output tapes.\n" << std::endl;
+// ================================
+// AYUDA Y USO
+// ================================
 
-  std::cout << "Usage:" << std::endl;
-  std::cout << "  ./ram_simulator <program.ram> <input.tape> <output.tape>" << std::endl;
-  std::cout << std::endl;
+void ShowHelp() {
+  std::cout << "ANALISIS DE ALGORITMOS - PRACTICA 1\n";
+  std::cout << "Comparador de algoritmos Divide y Venceras\n\n";
 
-  std::cout << "Arguments:" << std::endl;
-  std::cout << "  <program.ram>   : File containing the RAM program (instructions and labels)." << std::endl;
-  std::cout << "  <input.tape>    : File with input data (one integer per line)." << std::endl;
-  std::cout << "  <output.tape>   : File where the output tape will be written after execution." << std::endl;
-  std::cout << std::endl;
+  std::cout << "Uso:\n";
+  std::cout << "  ./programa [--help]\n\n";
 
-  std::cout << "Program format:" << std::endl;
-  std::cout << "  - Instructions: LOAD, STORE, ADD, SUB, MUL, DIV, READ, WRITE, JUMP, JZERO, JGTZ, HALT." << std::endl;
-  std::cout << "  - Operands: =value (constant), register (direct), *register (indirect)." << std::endl;
-  std::cout << "  - Labels: alphanumeric string followed by ':' at the beginning of a line." << std::endl;
-  std::cout << "  - Comments: start with '#' (ignored)." << std::endl;
-  std::cout << std::endl;
+  std::cout << "Modos de ejecucion:\n";
+  std::cout << "  1. Modo normal  -> Comparacion de tiempos\n";
+  std::cout << "  2. Modo debug   -> Muestra instancia y solucion\n\n";
 
-  std::cout << "Extended version (vector support):" << std::endl;
-  std::cout << "  - Vector access: Rbase[index], where index can be any operand type." << std::endl;
-  std::cout << "  - Example: LOAD R1[R2]  loads from R1 at position given by R2." << std::endl;
-  std::cout << std::endl;
-
-  std::cout << "Options:" << std::endl;
-  std::cout << "  --help        Show this help message and exit." << std::endl;
+  std::cout << "Algoritmos disponibles:\n";
+  std::cout << "  - MergeSort\n";
+  std::cout << "  - QuickSort\n\n";
 }
 
-
-/**
- * @brief Prints how to use the program
- */
-void Usage() {
-  std::cout << "Usage: ./ram_simulator <program.ram> <input.tape> <output.tape>" << std::endl;
-  std::cout << "Try './ram_simulator --help' for more information." << std::endl;
+void ShowUsage() {
+  std::cout << "Uso: ./programa [--help]\n";
+  std::cout << "Ejecuta sin argumentos para modo interactivo.\n";
 }
 
-
-/**
- * @brief Validates if a file has a valid extension (.ram for RAM files, .txt for input/output files)
- * @param name The name of the file to validate
- * @return true if the file has a valid extension, false otherwise
- */
-bool ValidateRAMFile (const std::string& name) {
-  if (name.find('.') == std::string::npos) {
-    return false;  
-  }
-  std::regex pattern (R"((.*)\.(ram)$)");
-  return std::regex_match(name, pattern);
-}
-
-
-/**
- * @brief Validates if a file has a valid extension (.ram for RAM files, .txt for input/output files)
- * @param name The name of the file to validate
- * @return true if the file has a valid extension, false otherwise
- */
-bool ValidateInputOutputFile (const std::string& name) {
-  if (name.find('.') == std::string::npos) {
-    return false;  
-  }
-  std::regex pattern (R"((.*)\.(txt)$)");
-  return std::regex_match(name, pattern);
-}
-
-
-/**
- * @brief Validates arguments given in CLI
- * @param argc
- * @param argv
- */
 int ValidateArguments(int argc, char* argv[]) {
   if (argc == 2) {
-    std::string arg1 = argv[1];
-    if (arg1 == "--help" || arg1 == "-h") {
-      Help();
+    std::string arg = argv[1];
+    if (arg == "--help" || arg == "-h") {
+      ShowHelp();
       return 0;
-    } 
-  } else if (argc == 4) {
-    if (ValidateRAMFile(argv[1]) && ValidateInputOutputFile(argv[2]) && ValidateInputOutputFile(argv[3])) {
-      return -1;
-    } 
-  } 
+    }
+  }
+  else if (argc == 1) {
+    return -1;  // ejecución normal
+  }
 
-  Usage();
+  ShowUsage();
   return 1;
 }
 
+// ================================
+// MENÚS
+// ================================
 
-/**
- * @brief Elimina espacios en blanco al inicio y final de una cadena.
- */
-std::string trim(const std::string& string) {
-  const std::string whitespace = " \t\n\r\f\v";
-  size_t start = string.find_first_not_of(whitespace);
-  if (start == std::string::npos) return "";
-  size_t end = string.find_last_not_of(whitespace);
-  return string.substr(start, end - start + 1);
+void ShowMainMenu() {
+  std::cout << "\n===== MENU PRINCIPAL =====\n";
+  std::cout << "1. Modo normal (comparacion de tiempos)\n";
+  std::cout << "2. Modo debug (mostrar ejecucion)\n";
+  std::cout << "0. Salir\n";
 }
 
-/**
- * @brief Checks if a string represents a valid integer 
- * @param string The string to check
- * @return true if the string is a valid integer, false otherwise
- */
-bool isInteger(const std::string& string) {
-  if (string.empty()) return false;
+void ShowAlgorithmMenu() {
+  std::cout << "\n===== SELECCION DE ALGORITMO =====\n";
+  std::cout << "1. MergeSort\n";
+  std::cout << "2. QuickSort\n";
+  std::cout << "3. Ambos\n";
+}
+
+int AskExecutionMode() {
+  int option;
+  ShowMainMenu();
+  std::cout << "Seleccione una opcion: ";
+  std::cin >> option;
+  return option;
+}
+
+int AskAlgorithmChoice() {
+  int option;
+  ShowAlgorithmMenu();
+  std::cout << "Seleccione algoritmo: ";
+  std::cin >> option;
+  return option;
+}
+
+size_t AskInstanceSize() {
+  size_t size;
+  std::cout << "Tamano de la instancia: ";
+  std::cin >> size;
+  return size;
+}
+
+int AskNumberOfExperiments() {
+  int n;
+  std::cout << "Numero de experimentos: ";
+  std::cin >> n;
+  return n;
+}
+
+// ================================
+// UTILIDADES
+// ================================
+
+std::string trim(const std::string& str) {
+  const std::string whitespace = " \t\n\r\f\v";
+  size_t start = str.find_first_not_of(whitespace);
+  if (start == std::string::npos) return "";
+  size_t end = str.find_last_not_of(whitespace);
+  return str.substr(start, end - start + 1);
+}
+
+bool isInteger(const std::string& str) {
+  if (str.empty()) return false;
 
   size_t i = 0;
-  if (string[0] == '-' || string[0] == '+') {
-    if (string.length() == 1) return false;
+  if (str[0] == '-' || str[0] == '+') {
+    if (str.size() == 1) return false;
     i = 1;
   }
 
-  for (; i < string.length(); ++i) {
-    if (!std::isdigit(string[i])) return false;
+  for (; i < str.size(); ++i) {
+    if (!std::isdigit(str[i])) return false;
   }
 
   return true;
 }
 
-
-/**
- * @brief Divide una línea en tokens separados por espacios.
- */
-std::vector<std::string> tokenize(const std::string& line) {
-  std::vector<std::string> tokens;
-  std::istringstream iss(line);
-  std::string token;
-  while (iss >> token) {
-    tokens.push_back(token);
-  }
-  return tokens;
-}
-
-/**
- * @brief Convierte un string a mayúsculas.
- */
-std::string toUpper(const std::string& string) {
-  std::string result = string;
+std::string toUpper(const std::string& str) {
+  std::string result = str;
   std::transform(result.begin(), result.end(), result.begin(),
-                [](unsigned char c){ return std::toupper(c); });
+                 [](unsigned char c){ return std::toupper(c); });
   return result;
-}
-
-/**
- * @brief Comprueba si un opcode es de salto.
- */
-bool isJumpOpcode(const std::string& op) {
-  std::string uop = toUpper(op);
-  return uop == "JUMP" || uop == "JZERO" || uop == "JGTZ";
 }

@@ -1,56 +1,49 @@
-#ifndef INSTANCIA_VECTOR_HPP
-#define INSTANCIA_VECTOR_HPP
+/**
+** Universidad de La Laguna
+** Escuela Superior de Ingenieria y Tecnologia
+** Grado en Ingenieria Informatica
+** Asignatura: Diseño y Analisis de Algoritmos
+** Curso: 3º
+** Practica 1/2: Divide y Venceras
+** Autores: Marco Pérez Padilla, Keran Miranda González
+** Fecha: 03/03/2026
+**
+** Archivo InstanciaVector.h: Implementación concreta de instancia basada en vector
+**/
 
-#include "../core/Instancia.hpp"
+#ifndef INSTANCIA_VECTOR_H
+#define INSTANCIA_VECTOR_H
+
+#include "../core/Instancia.h"
+#include "../exceptions.h"
 #include <vector>
 #include <iostream>
 
-/**
- * @brief Representa una instancia del problema de ordenación.
- *
- * Encapsula un vector de elementos a ordenar.
- * No se encarga de generar datos aleatorios (cumple SRP).
- *
- * @tparam T Tipo de los elementos del vector.
- */
 template <typename T>
 class InstanciaVector : public Instancia {
-
-public:
-
-    /**
-     * @brief Constructor a partir de un vector existente.
-     */
-    explicit InstanciaVector(const std::vector<T>& datos) : datos_(datos) {}
-
-    /**
-     * @brief Devuelve el tamaño de la instancia.
-     */
-    size_t tamano() const override {
-      return datos_.size();
-    }
-
-    /**
-     * @brief Permite acceder a los datos (solo lectura).
-     */
-    const std::vector<T>& datos() const {
-      return datos_;
-    }
-
-    /**
-     * @brief Muestra la instancia por pantalla.
-     */
-    void mostrar(std::ostream& os) const override {
-      os << "[ ";
-      for (const auto& elem : datos_) {
-        os << elem << " ";
-      }
-      os << "]";
-    }
-
-private:
+ private:
   std::vector<T> datos_;
+
+ public:
+  explicit InstanciaVector(const std::vector<T>& datos) : datos_(datos) {
+    if (datos_.empty()) {
+      throw InvalidSizeException(0);
+    }
+  }
+
+  const std::vector<T>& getDatos() const {
+    return datos_;
+  }
+
+  size_t tamano() const {
+    return datos_.size();
+  }
+
+  void mostrar(std::ostream& os) const override {
+    for (const auto& e : datos_) {
+      os << e << " ";
+    }
+  }
 };
 
 #endif
-

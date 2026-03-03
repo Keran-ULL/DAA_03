@@ -7,27 +7,42 @@
 ** Práctica 1: Complejidad Computacional
 ** Autor: Marco Pérez Padilla, Keran Miranda González
 ** Correo: alu0101469348@ull.edu.es, alu0101485904@ull.edu.es
-** Fecha: 01/02/2026
-
-** Archivo help.h: Funciones de ayuda
+** Fecha: 03/03/2026
 **
-** Referencias:
-**      Enlaces de interés
-
-** Historial de revisiones:
-**      01/02/2026 - Creación (primera versión) del código
+** Archivo help_functions.h: Funciones auxiliares para interacción con el usuario
 **/
 
-#include <string>
-#include <vector>
+#ifndef HELP_FUNCTIONS_H
+#define HELP_FUNCTIONS_H
 
-void Help ();
-void Usage();
-bool ValidateRAMFile (const std::string& name);
-bool ValidateInputOutputFile (const std::string& name);
+#include <string>
+
+// ================================
+// AYUDA Y USO
+// ================================
+
+void ShowHelp();
+void ShowUsage();
 int ValidateArguments(int argc, char* argv[]);
-std::string trim(const std::string& string);
-bool isInteger(const std::string& string);
-std::vector<std::string> tokenize(const std::string& line);
-std::string toUpper(const std::string& string);
-bool isJumpOpcode(const std::string& op);
+
+// ================================
+// MENÚS
+// ================================
+
+void ShowMainMenu();
+void ShowAlgorithmMenu();
+
+int AskExecutionMode();      // 1 = Normal | 2 = Debug
+int AskAlgorithmChoice();    // 1 = MergeSort | 2 = QuickSort | 3 = Ambos
+size_t AskInstanceSize();
+int AskNumberOfExperiments();
+
+// ================================
+// UTILIDADES
+// ================================
+
+std::string trim(const std::string& str);
+bool isInteger(const std::string& str);
+std::string toUpper(const std::string& str);
+
+#endif
