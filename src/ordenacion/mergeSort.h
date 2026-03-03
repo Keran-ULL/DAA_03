@@ -63,33 +63,34 @@ protected:
     }
 
     SolucionVector<T> combinar(
-        const SolucionVector<T>& s1,
-        const SolucionVector<T>& s2
-    ) const override {
+    const SolucionVector<T>& s1,
+    const SolucionVector<T>& s2
+) const override {
 
-        const auto& v1 = s1.getDatos();
-        const auto& v2 = s2.getDatos();
+    const auto& v1 = s1.datos();
+    const auto& v2 = s2.datos();
 
-        std::vector<T> resultado;
-        resultado.reserve(v1.size() + v2.size());
+    std::vector<T> resultado;
+    resultado.reserve(v1.size() + v2.size());
 
-        size_t i = 0, j = 0;
+    size_t i = 0, j = 0;
 
-        while (i < v1.size() && j < v2.size()) {
-            if (v1[i] <= v2[j])
-                resultado.push_back(v1[i++]);
-            else
-                resultado.push_back(v2[j++]);
-        }
-
-        while (i < v1.size())
+    while (i < v1.size() && j < v2.size()) {
+        if (v1[i] <= v2[j])
             resultado.push_back(v1[i++]);
-
-        while (j < v2.size())
+        else
             resultado.push_back(v2[j++]);
-
-        return SolucionVector<T>(resultado);
     }
+
+    while (i < v1.size())
+        resultado.push_back(v1[i++]);
+
+    while (j < v2.size())
+        resultado.push_back(v2[j++]);
+
+    return SolucionVector<T>(resultado);
+}
+
 };
 
 #endif

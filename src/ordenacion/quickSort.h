@@ -79,34 +79,22 @@ protected:
     }
 
     SolucionVector<T> combinar(
-        const SolucionVector<T>& s1,
-        const SolucionVector<T>& s2
-    ) const override {
+    const SolucionVector<T>& s1,
+    const SolucionVector<T>& s2
+) const override {
 
-        std::vector<T> resultado;
+    const auto& menores = s1.datos();
+    const auto& mayores = s2.datos();
 
-        const auto& menores = s1.getDatos();
-        const auto& mayores = s2.getDatos();
+    std::vector<T> resultado;
+    resultado.reserve(menores.size() + mayores.size());
 
-        resultado.reserve(menores.size() + mayores.size() + 1);
+    resultado.insert(resultado.end(), menores.begin(), menores.end());
+    resultado.insert(resultado.end(), mayores.begin(), mayores.end());
 
-        // El pivote ya fue eliminado en dividir, así que
-        // QuickSort necesita reconstruir correctamente.
-        // En esta versión, el pivote se incluye implícitamente
-        // porque la recursión ordena menores y mayores
-        // y la combinación real sería:
-        //
-        // menores + pivote + mayores
-        //
-        // Para mantener coherencia con el esquema binario,
-        // asumimos que el pivote fue gestionado como parte
-        // del subproblema izquierdo.
+    return SolucionVector<T>(resultado);
+}
 
-        resultado.insert(resultado.end(), menores.begin(), menores.end());
-        resultado.insert(resultado.end(), mayores.begin(), mayores.end());
-
-        return SolucionVector<T>(resultado);
-    }
 };
 
 #endif
