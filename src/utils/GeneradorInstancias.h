@@ -1,7 +1,7 @@
 #ifndef GENERADOR_INSTANCIAS_HPP
 #define GENERADOR_INSTANCIAS_HPP
 
-#include "../core/Instancia.hpp"
+#include "../core/Instancia.h"
 #include <memory>
 
 /**

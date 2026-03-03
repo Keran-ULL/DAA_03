@@ -14,7 +14,7 @@
 #ifndef MEDIDOR_TIEMPOS_H
 #define MEDIDOR_TIEMPOS_H
 
-#include "../exceptions.h"
+#include "../exceptions/exceptions.h"
 #include <chrono>
 
 class MedidorTiempos {

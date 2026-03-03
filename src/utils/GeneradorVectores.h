@@ -16,7 +16,7 @@
 
 #include "GeneradorInstancias.h"
 #include "../ordenacion/InstanciaVector.h"
-#include "../exceptions.h"
+#include "../exceptions/exceptions.h"
 #include <random>
 #include <memory>
 

@@ -14,10 +14,10 @@
 #ifndef QUICK_SORT_H
 #define QUICK_SORT_H
 
-#include "../core/divideYVenceras.h"
+#include "../core/divideYvenceras.h"
 #include "../ordenacion/InstanciaVector.h"
 #include "../ordenacion/SolucionVector.h"
-#include "../exceptions.h"
+#include "../exceptions/exceptions.h"
 #include <vector>
 
 template <typename T>
