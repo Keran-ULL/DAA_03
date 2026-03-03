@@ -35,30 +35,30 @@ public:
 
 protected:
 
-    // Recursión base: vectores de tamaño <= 1
+    // Caso base: instancia pequeña
     bool esPequeno(const InstanciaVector<T>& instancia) const override {
-        return instancia.datos().size() <= 1;
+        return instancia.getDatos().size() <= 1;
     }
 
+    // Resolver instancia pequeña
     SolucionVector<T> resolverPequeno(
         const InstanciaVector<T>& instancia
     ) const override {
-        return SolucionVector<T>(instancia.datos());
+        return SolucionVector<T>(instancia.getDatos());
     }
 
-    // Divide el vector usando el primer elemento como pivote
+    // Dividir la instancia en dos subproblemas
     std::pair<
         std::unique_ptr<InstanciaVector<T>>,
         std::unique_ptr<InstanciaVector<T>>
     >
     dividir(const InstanciaVector<T>& instancia) const override {
 
-        const auto& datos = instancia.datos();
+        const auto& datos = instancia.getDatos();
 
-        if (datos.empty()) {
-            // No debería pasar, pero por seguridad devolvemos dos vectores vacíos
+        if (datos.size() <= 1) {
             return {
-                std::make_unique<InstanciaVector<T>>(std::vector<T>{}),
+                std::make_unique<InstanciaVector<T>>(datos),
                 std::make_unique<InstanciaVector<T>>(std::vector<T>{})
             };
         }
@@ -81,14 +81,14 @@ protected:
         };
     }
 
-    // Combina los resultados de los subproblemas
+    // Combinar las soluciones de los subproblemas
     SolucionVector<T> combinar(
         const SolucionVector<T>& s1,
         const SolucionVector<T>& s2
     ) const override {
 
-        const auto& menores = s1.datos();
-        const auto& mayores = s2.datos();
+        const auto& menores = s1.getDatos();
+        const auto& mayores = s2.getDatos();
 
         std::vector<T> resultado;
         resultado.reserve(menores.size() + mayores.size());
@@ -102,4 +102,5 @@ protected:
 };
 
 #endif
+
 
