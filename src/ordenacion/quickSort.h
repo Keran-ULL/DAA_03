@@ -35,27 +35,30 @@ public:
 
 protected:
 
+    // Recursión base: vectores de tamaño <= 1
     bool esPequeno(const InstanciaVector<T>& instancia) const override {
-        return instancia.getDatos().size() <= 1;
+        return instancia.datos().size() <= 1;
     }
 
     SolucionVector<T> resolverPequeno(
         const InstanciaVector<T>& instancia
     ) const override {
-        return SolucionVector<T>(instancia.getDatos());
+        return SolucionVector<T>(instancia.datos());
     }
 
+    // Divide el vector usando el primer elemento como pivote
     std::pair<
         std::unique_ptr<InstanciaVector<T>>,
         std::unique_ptr<InstanciaVector<T>>
     >
     dividir(const InstanciaVector<T>& instancia) const override {
 
-        const auto& datos = instancia.getDatos();
+        const auto& datos = instancia.datos();
 
-        if (datos.size() <= 1) {
+        if (datos.empty()) {
+            // No debería pasar, pero por seguridad devolvemos dos vectores vacíos
             return {
-                std::make_unique<InstanciaVector<T>>(datos),
+                std::make_unique<InstanciaVector<T>>(std::vector<T>{}),
                 std::make_unique<InstanciaVector<T>>(std::vector<T>{})
             };
         }
@@ -78,23 +81,25 @@ protected:
         };
     }
 
+    // Combina los resultados de los subproblemas
     SolucionVector<T> combinar(
-    const SolucionVector<T>& s1,
-    const SolucionVector<T>& s2
-) const override {
+        const SolucionVector<T>& s1,
+        const SolucionVector<T>& s2
+    ) const override {
 
-    const auto& menores = s1.datos();
-    const auto& mayores = s2.datos();
+        const auto& menores = s1.datos();
+        const auto& mayores = s2.datos();
 
-    std::vector<T> resultado;
-    resultado.reserve(menores.size() + mayores.size());
+        std::vector<T> resultado;
+        resultado.reserve(menores.size() + mayores.size());
 
-    resultado.insert(resultado.end(), menores.begin(), menores.end());
-    resultado.insert(resultado.end(), mayores.begin(), mayores.end());
+        resultado.insert(resultado.end(), menores.begin(), menores.end());
+        resultado.insert(resultado.end(), mayores.begin(), mayores.end());
 
-    return SolucionVector<T>(resultado);
-}
+        return SolucionVector<T>(resultado);
+    }
 
 };
 
 #endif
+
