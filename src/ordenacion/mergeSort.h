@@ -10,66 +10,89 @@
 **
 ** Archivo MergeSort.h: Implementación del algoritmo MergeSort
 **/
-
-#ifndef MERGE_SORT_H
-#define MERGE_SORT_H
+#ifndef MERGE_SORT_HPP
+#define MERGE_SORT_HPP
 
 #include "../core/divideYvenceras.h"
-#include "../ordenacion/InstanciaVector.h"
-#include "../ordenacion/SolucionVector.h"
-#include "../exceptions/exceptions.h"
+#include "InstanciaVector.h"
+#include "SolucionVector.h"
 #include <vector>
-#include <algorithm>
+#include <memory>
 
+/**
+ * @brief Implementación de MergeSort usando el esquema Divide y Vencerás
+ */
 template <typename T>
-class MergeSort : public DivideYVenceras<InstanciaVector<T>, SolucionVector<T>> {
+class MergeSort 
+: public DivideYVenceras<InstanciaVector<T>, SolucionVector<T>> {
 
- private:
+public:
 
-  void merge(std::vector<T>& v, int l, int m, int r) {
-    std::vector<T> aux(r - l + 1);
-
-    int i = l, j = m + 1, k = 0;
-
-    while (i <= m && j <= r) {
-      if (v[i] <= v[j]) aux[k++] = v[i++];
-      else aux[k++] = v[j++];
+    const char* nombre() const override {
+        return "MergeSort";
     }
 
-    while (i <= m) aux[k++] = v[i++];
-    while (j <= r) aux[k++] = v[j++];
+protected:
 
-    for (int t = 0; t < k; ++t)
-      v[l + t] = aux[t];
-  }
-
-  void mergeSort(std::vector<T>& v, int l, int r) {
-    if (l >= r) return;
-
-    int m = (l + r) / 2;
-    mergeSort(v, l, m);
-    mergeSort(v, m + 1, r);
-    merge(v, l, m, r);
-  }
-
- public:
-
-  SolucionVector<T> ejecutar(const InstanciaVector<T>& instancia) override {
-    try {
-      std::vector<T> copia = instancia.getDatos();
-      mergeSort(copia, 0, copia.size() - 1);
-      return SolucionVector<T>(copia);
+    bool esPequeno(const InstanciaVector<T>& instancia) const override {
+        return instancia.getDatos().size() <= 1;
     }
-    catch (...) {
-      throw AlgorithmExecutionException("MergeSort");
-    }
-  }
 
-  std::string nombre() const override {
-    return "MergeSort";
-  }
+    SolucionVector<T> resolverPequeno(
+        const InstanciaVector<T>& instancia
+    ) const override {
+        return SolucionVector<T>(instancia.getDatos());
+    }
+
+    std::pair<
+        std::unique_ptr<InstanciaVector<T>>,
+        std::unique_ptr<InstanciaVector<T>>
+    >
+    dividir(const InstanciaVector<T>& instancia) const override {
+
+        const auto& datos = instancia.getDatos();
+        size_t mitad = datos.size() / 2;
+
+        std::vector<T> izquierda(datos.begin(), datos.begin() + mitad);
+        std::vector<T> derecha(datos.begin() + mitad, datos.end());
+
+        return {
+            std::make_unique<InstanciaVector<T>>(izquierda),
+            std::make_unique<InstanciaVector<T>>(derecha)
+        };
+    }
+
+    SolucionVector<T> combinar(
+        const SolucionVector<T>& s1,
+        const SolucionVector<T>& s2
+    ) const override {
+
+        const auto& v1 = s1.getDatos();
+        const auto& v2 = s2.getDatos();
+
+        std::vector<T> resultado;
+        resultado.reserve(v1.size() + v2.size());
+
+        size_t i = 0, j = 0;
+
+        while (i < v1.size() && j < v2.size()) {
+            if (v1[i] <= v2[j])
+                resultado.push_back(v1[i++]);
+            else
+                resultado.push_back(v2[j++]);
+        }
+
+        while (i < v1.size())
+            resultado.push_back(v1[i++]);
+
+        while (j < v2.size())
+            resultado.push_back(v2[j++]);
+
+        return SolucionVector<T>(resultado);
+    }
 };
 
 #endif
+
 
 
