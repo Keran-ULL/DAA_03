@@ -4,7 +4,7 @@
 ** Grado en Ingenieria Informatica
 ** Asignatura: Diseño y Analisis de Algoritmos
 ** Curso: 3º
-** Practica 1/2: Divide y Venceras
+** Práctica 3: Divide y Venceras
 ** Autores: Marco Pérez Padilla, Keran Miranda González
 ** Fecha: 03/03/2026
 
@@ -24,12 +24,8 @@ class DAAException : public std::exception {
  protected:
   std::string error_message_;
  public:
-  explicit DAAException(const std::string& msg)
-      : error_message_(msg) {}
-
-  const char* what() const noexcept override {
-    return error_message_.c_str();
-  }
+  explicit DAAException(const std::string& msg) : error_message_(msg) {}
+  const char* what() const noexcept override {return error_message_.c_str();}
 };
 
 /**
@@ -84,6 +80,15 @@ class TimeMeasurementException : public DAAException {
  public:
   TimeMeasurementException()
       : DAAException("Error during time measurement") {}
+};
+
+/**
+ * @brief Lanzada cuando ocurre un error al parsear un archivo JSON
+ */
+class JSONParseException : public DAAException {
+ public:
+  explicit JSONParseException(const std::string& detail)
+      : DAAException("JSON parse error: " + detail) {}
 };
 
 #endif

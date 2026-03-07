@@ -4,7 +4,7 @@
 ** Grado en Ingenieria Informatica
 ** Asignatura: Diseño y Analisis de Algoritmos
 ** Curso: 3º
-** Practica 1/2: Divide y Venceras
+** Práctica 3: Divide y Venceras
 ** Autores: Marco Pérez Padilla, Keran Miranda González
 ** Fecha: 03/03/2026
 **
@@ -19,29 +19,44 @@
 #include <vector>
 #include <iostream>
 
-template <typename T>
-class InstanciaVector : public Instancia {
+/**
+ * @brief Representa una instancia concreta basada en un vector
+ * @tparam T Tipo de los elementos
+ */
+template <typename T> class InstanciaVector : public Instancia {
  private:
   std::vector<T> datos_;
 
  public:
-  explicit InstanciaVector(const std::vector<T>& datos) : datos_(datos) {
-    if (datos_.empty()) {
-      throw InvalidSizeException(0);
-    }
-  }
+  /**
+   * @brief Constructor a partir de un vector
+   * @param datos Vector con los elementos de la instancia
+   */
+  explicit InstanciaVector(const std::vector<T>& datos) : datos_(datos) {}
 
+  /**
+   * @brief Devuelve los datos de la instancia
+   * @returns referencia constante al vector interno
+   */
   const std::vector<T>& getDatos() const {
     return datos_;
   }
 
-  size_t tamano() const {
+  /**
+   * @brief Devuelve el tamaño de la instancia
+   * @returns tamaño del vector interno
+   */
+  size_t size() const {
     return datos_.size();
   }
 
+  /**
+   * @brief Muestra la instancia por pantalla
+   * @param os flujo de salida
+   */
   void mostrar(std::ostream& os) const override {
-    for (const auto& e : datos_) {
-      os << e << " ";
+    for (const auto& data : datos_) {
+      os << data << " ";
     }
   }
 };

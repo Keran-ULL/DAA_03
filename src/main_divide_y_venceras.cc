@@ -4,7 +4,7 @@
 ** Grado en Ingeniería Informática
 ** Asignatura: Diseño y Análisis de Algoritmos
 ** Curso: 3º
-** Práctica 1: Complejidad Computacional
+** Práctica 3: Divide y Vencerás
 ** Autores: Marco Pérez Padilla, Keran Miranda González
 ** Fecha: 03/03/2026
 **
@@ -12,125 +12,69 @@
 **/
 
 #include <iostream>
+#include <memory>
+#include <string>
 
 #include "help/help_functions.h"
+#include "execution/execution_funcions.h"
 #include "exceptions/exceptions.h"
 
-#include "utils/GeneradorVectores.h"
-#include "utils/MedidorTiempos.h"
-#include "utils/TablaResultados.h"
-
-#include "ordenacion/mergeSort.h"
-#include "ordenacion/quickSort.h"
-
-using namespace std;
-
-/* ===========================================
-   FUNCIONES AUXILIARES DE EJECUCIÓN
-   =========================================== */
-
-void EjecutarModoDebug(int algoritmoSeleccionado, size_t tamano) {
-
-  GeneradorVectores<int> generador(tamano, 0, 100);
-  auto instanciaBase = generador.generar();
-  auto* instancia = dynamic_cast<InstanciaVector<int>*>(instanciaBase.get());
-
-  cout << "\nInstancia generada:\n";
-  instancia->mostrar(cout);
-  cout << "\n\n";
-
-  if (algoritmoSeleccionado == 1 || algoritmoSeleccionado == 3) {
-    MergeSort<int> ms;
-    auto solucion = ms.ejecutar(*instancia);
-
-    cout << "Resultado MergeSort:\n";
-    solucion.mostrar(cout);
-    cout << "\n\n";
-  }
-
-  if (algoritmoSeleccionado == 2 || algoritmoSeleccionado == 3) {
-    QuickSort<int> qs;
-    auto solucion = qs.ejecutar(*instancia);
-
-    cout << "Resultado QuickSort:\n";
-    solucion.mostrar(cout);
-    cout << "\n\n";
-  }
-}
-
-
-void EjecutarModoNormal(int algoritmoSeleccionado,
-                        size_t tamano,
-                        int experimentos) {
-
-  TablaResultados tabla;
-
-  for (int i = 0; i < experimentos; ++i) {
-
-    GeneradorVectores<int> generador(tamano, 0, 10000);
-    auto instanciaBase = generador.generar();
-    auto* instancia = dynamic_cast<InstanciaVector<int>*>(instanciaBase.get());
-
-    if (algoritmoSeleccionado == 1 || algoritmoSeleccionado == 3) {
-      MergeSort<int> ms;
-      double tiempo =
-        MedidorTiempos::medir<MergeSort<int>,
-                              InstanciaVector<int>,
-                              SolucionVector<int>>(ms, *instancia);
-
-      tabla.agregarResultado(ms.nombre(), tamano, tiempo);
-    }
-
-    if (algoritmoSeleccionado == 2 || algoritmoSeleccionado == 3) {
-      QuickSort<int> qs;
-      double tiempo =
-        MedidorTiempos::medir<QuickSort<int>,
-                              InstanciaVector<int>,
-                              SolucionVector<int>>(qs, *instancia);
-
-      tabla.agregarResultado(qs.nombre(), tamano, tiempo);
-    }
-  }
-
-  cout << "\n=== RESULTADOS ===\n";
-  tabla.mostrar();
-}
-
-
-/* ===========================================
-   MAIN
-   =========================================== */
-
+/**
+ * @brief Función principal del programa.
+ *
+ * Permite seleccionar modo de ejecución, algoritmo, tamaño de instancia
+ * y número de experimentos. Soporta tanto ordenación como Scheduling.
+ */
 int main(int argc, char* argv[]) {
-
   int argStatus = ValidateArguments(argc, argv);
-  if (argStatus != -1)
-    return argStatus;
+  if (argStatus != -1) return argStatus;
 
-  try {
-
+  while (true) {
     int modo = AskExecutionMode();
-    if (modo == 0)
-      return 0;
+
+    if (modo == 0) {
+      std::cout << "Saliendo...\n";
+      break;
+    }
+
+    if (modo != 1 && modo != 2) {
+      std::cout << "Opción inválida, intente de nuevo.\n";
+      continue;
+    }
 
     int algoritmo = AskAlgorithmChoice();
-    size_t tamano = AskInstanceSize();
-
-    if (modo == 1) {
-      int experimentos = AskNumberOfExperiments();
-      EjecutarModoNormal(algoritmo, tamano, experimentos);
-    }
-    else if (modo == 2) {
-      EjecutarModoDebug(algoritmo, tamano);
+    if (algoritmo < 1 || algoritmo > 3) {
+      std::cout << "Opción de algoritmo inválida.\n";
+      continue;
     }
 
-  }
-  catch (const DAAException& e) {
-    cerr << "Error: " << e.what() << endl;
-  }
-  catch (const std::exception& e) {
-    cerr << "Unexpected error: " << e.what() << endl;
-  }
+    size_t size = AskInstanceSize();
+    int experimentos = 1;
+    if (modo == 1) { 
+      experimentos = AskNumberOfExperiments();
+    }
 
+    if (modo == 2) {  
+      EjecutarDebugOrdenacion(algoritmo, size);
+    } else { 
+      EjecutarNormalOrdenacion(algoritmo, size, experimentos);
+    }
+
+    std::cout << "\n=== EJECUCIÓN DE SCHEDULING ===\n";
+    std::string archivo;
+    std::cout << "Ingrese ruta del archivo JSON de Scheduling: ";
+    std::cin >> archivo;
+
+    try {
+      if (modo == 2) {
+        EjecutarDebugScheduling(archivo);
+      } else {
+        EjecutarNormalScheduling(archivo);
+      }
+    } catch (const std::exception& e) {
+      std::cout << "Error al ejecutar Scheduling: " << e.what() << std::endl;
+    }
+    std::cout << "\nEjecución completa.\n";
+  }
   return 0;
 }

@@ -4,7 +4,7 @@
 ** Grado en Ingenieria Informatica
 ** Asignatura: Diseño y Analisis de Algoritmos
 ** Curso: 3º
-** Practica 1/2: Divide y Venceras
+** Práctica 3: Divide y Venceras
 ** Autores: Marco Pérez Padilla, Keran Miranda González
 ** Fecha: 03/03/2026
 **
@@ -20,24 +20,16 @@
 #include <random>
 #include <memory>
 
-template <typename T>
-class GeneradorVectores : public GeneradorInstancias {
+template <typename T> class GeneradorVectores : public GeneradorInstancias {
  private:
   size_t tamano_;
   T min_;
   T max_;
 
  public:
-  GeneradorVectores(size_t tamano, T min, T max)
-      : tamano_(tamano), min_(min), max_(max) {
-
-    if (tamano_ == 0) {
-      throw InvalidSizeException(tamano_);
-    }
-
-    if (min_ > max_) {
-      throw InstanceGenerationException("min > max");
-    }
+  GeneradorVectores(size_t size, T min, T max) : tamano_(size), min_(min), max_(max) {
+    if (tamano_ == 0) {throw InvalidSizeException(tamano_);}
+    if (min_ > max_) {throw InstanceGenerationException("min > max");}
   }
 
   std::unique_ptr<Instancia> generar() const override {

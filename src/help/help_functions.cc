@@ -4,7 +4,7 @@
 ** Grado en Ingeniería Informática
 ** Asignatura: Diseño y Análisis de Algoritmos
 ** Curso: 3º
-** Práctica 1: Complejidad Computacional
+** Práctica 3: Divide y Venceras
 ** Autor: Marco Pérez Padilla, Keran Miranda González
 ** Fecha: 03/03/2026
 **
@@ -17,12 +17,11 @@
 #include <algorithm>
 #include <cctype>
 
-// ================================
-// AYUDA Y USO
-// ================================
-
+/**
+ * @brief Muestra la ayuda completa del programa.
+ */
 void ShowHelp() {
-  std::cout << "ANALISIS DE ALGORITMOS - PRACTICA 1\n";
+  std::cout << "ANALISIS DE ALGORITMOS - PRACTICA 2\n";
   std::cout << "Comparador de algoritmos Divide y Venceras\n\n";
 
   std::cout << "Uso:\n";
@@ -37,11 +36,20 @@ void ShowHelp() {
   std::cout << "  - QuickSort\n\n";
 }
 
+/**
+ * @brief Muestra el uso básico del programa.
+ */
 void ShowUsage() {
   std::cout << "Uso: ./programa [--help]\n";
   std::cout << "Ejecuta sin argumentos para modo interactivo.\n";
 }
 
+/**
+ * @brief Valida los argumentos de entrada del programa.
+ * @param argc Número de argumentos
+ * @param argv Vector de argumentos
+ * @returns 0 si mostró help, -1 si ejecución normal, 1 si argumentos inválidos
+ */
 int ValidateArguments(int argc, char* argv[]) {
   if (argc == 2) {
     std::string arg = argv[1];
@@ -51,17 +59,16 @@ int ValidateArguments(int argc, char* argv[]) {
     }
   }
   else if (argc == 1) {
-    return -1;  // ejecución normal
+    return -1; 
   }
 
   ShowUsage();
   return 1;
 }
 
-// ================================
-// MENÚS
-// ================================
-
+/**
+ * @brief Muestra el menú principal del programa.
+ */
 void ShowMainMenu() {
   std::cout << "\n===== MENU PRINCIPAL =====\n";
   std::cout << "1. Modo normal (comparacion de tiempos)\n";
@@ -69,6 +76,9 @@ void ShowMainMenu() {
   std::cout << "0. Salir\n";
 }
 
+/**
+ * @brief Muestra el menú de selección de algoritmo.
+ */
 void ShowAlgorithmMenu() {
   std::cout << "\n===== SELECCION DE ALGORITMO =====\n";
   std::cout << "1. MergeSort\n";
@@ -76,6 +86,10 @@ void ShowAlgorithmMenu() {
   std::cout << "3. Ambos\n";
 }
 
+/**
+ * @brief Solicita al usuario seleccionar el modo de ejecución.
+ * @returns Opción seleccionada
+ */
 int AskExecutionMode() {
   int option;
   ShowMainMenu();
@@ -84,6 +98,10 @@ int AskExecutionMode() {
   return option;
 }
 
+/**
+ * @brief Solicita al usuario seleccionar el algoritmo a ejecutar.
+ * @returns Opción seleccionada
+ */
 int AskAlgorithmChoice() {
   int option;
   ShowAlgorithmMenu();
@@ -92,6 +110,10 @@ int AskAlgorithmChoice() {
   return option;
 }
 
+/**
+ * @brief Solicita al usuario el tamaño de la instancia.
+ * @returns Tamaño introducido
+ */
 size_t AskInstanceSize() {
   size_t size;
   std::cout << "Tamano de la instancia: ";
@@ -99,44 +121,13 @@ size_t AskInstanceSize() {
   return size;
 }
 
+/**
+ * @brief Solicita al usuario el número de experimentos a realizar.
+ * @returns Número de experimentos
+ */
 int AskNumberOfExperiments() {
   int n;
   std::cout << "Numero de experimentos: ";
   std::cin >> n;
   return n;
-}
-
-// ================================
-// UTILIDADES
-// ================================
-
-std::string trim(const std::string& str) {
-  const std::string whitespace = " \t\n\r\f\v";
-  size_t start = str.find_first_not_of(whitespace);
-  if (start == std::string::npos) return "";
-  size_t end = str.find_last_not_of(whitespace);
-  return str.substr(start, end - start + 1);
-}
-
-bool isInteger(const std::string& str) {
-  if (str.empty()) return false;
-
-  size_t i = 0;
-  if (str[0] == '-' || str[0] == '+') {
-    if (str.size() == 1) return false;
-    i = 1;
-  }
-
-  for (; i < str.size(); ++i) {
-    if (!std::isdigit(str[i])) return false;
-  }
-
-  return true;
-}
-
-std::string toUpper(const std::string& str) {
-  std::string result = str;
-  std::transform(result.begin(), result.end(), result.begin(),
-                 [](unsigned char c){ return std::toupper(c); });
-  return result;
 }

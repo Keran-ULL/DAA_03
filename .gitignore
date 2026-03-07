@@ -35,3 +35,6 @@
 .vscode/
 build/
 bin/
+
+# Productos de mover en windows
+*.swp
