@@ -1,3 +1,16 @@
+/**
+** Universidad de La Laguna
+** Escuela Superior de Ingenieria y Tecnologia
+** Grado en Ingenieria Informatica
+** Asignatura: Diseño y Analisis de Algoritmos
+** Curso: 3º
+** Practica 2: Divide y Venceras
+** Autores: Marco Pérez Padilla, Keran Miranda González
+** Fecha: 03/03/2026
+**
+** Archivo instancia.h: Representación de instancias para problemas
+**/
+
 #ifndef INSTANCIA_HPP
 #define INSTANCIA_HPP
 
@@ -10,19 +23,19 @@
  * Cumple el principio SRP: solo modela el problema.
  */
 class Instancia {
-public:
-    virtual ~Instancia() = default;
+ public:
+  virtual ~Instancia() = default;
 
-    /**
-     * @brief Devuelve el tamaño de la instancia.
-     *        Útil para experimentación.
-     */
-    virtual size_t size() const = 0;
+  /**
+   * @brief Devuelve el tamaño de la instancia.
+   *        Útil para experimentación.
+   */
+  virtual size_t size() const = 0;
 
-    /**
-     * @brief Muestra la instancia por pantalla.
-     */
-    virtual void mostrar(std::ostream& os) const = 0;
+  /**
+   * @brief Muestra la instancia por pantalla.
+   */
+  virtual void mostrar(std::ostream& os) const = 0;
 };
 
 #endif
