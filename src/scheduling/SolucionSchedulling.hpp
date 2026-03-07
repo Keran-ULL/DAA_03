@@ -1,61 +1,54 @@
-#ifndef SOLUCION_SCHEDULING_HPP
-#define SOLUCION_SCHEDULING_HPP
+/**
+** Universidad de La Laguna
+** Escuela Superior de Ingenieria y Tecnologia
+** Grado en Ingenieria Informatica
+** Asignatura: Diseño y Analisis de Algoritmos
+** Curso: 3º
+** Practica 2: Divide y Venceras
+** Autores: Marco Pérez Padilla, Keran Miranda González
+** Fecha: 07/03/2026
+**
+** Archivo SolucionScheduling.hpp: Implementación concreta de solucion para el problema Scheduling
+**/
+
+#ifndef SOLUCION_SCHEDULING_H
+#define SOLUCION_SCHEDULING_H
 
 #include "../core/Solucion.h"
 #include <vector>
 #include <iostream>
 
 class SolucionScheduling : public Solucion {
-
-private:
-
+ private:
   std::vector<std::vector<int>> plan_;
   int score_;
 
-public:
-
+ public:
   SolucionScheduling(int days,int employees)
     : plan_(days,std::vector<int>(employees,-1)),
       score_(0) {}
 
-  void set(int d,int e,int shift){
-    plan_[d][e]=shift;
+  // getters
+  int get(int dia,int empleado) const {return plan_[dia][empleado];}
+  int score() const {return score_;}
+  int getDays() const {return plan_.size();}
+  int getEmployees() const {
+    if (!plan_.empty()) return plan_[0].size();
+    return 0;
   }
 
-  int get(int d,int e) const {
-    return plan_[d][e];
-  }
-
-  void setScore(int s){
-    score_=s;
-  }
-
-  int score() const{
-    return score_;
-  }
+  // setters
+  void setScore(int s) {score_=s;}
+  void set(int dia,int empleado,int shift) {plan_[dia][empleado]=shift;}
 
   void mostrar(std::ostream& os) const override {
-
     os<<"Score: "<<score_<<"\n";
-
-    for(size_t d=0;d<plan_.size();d++){
-
-      os<<"Day "<<d<<": ";
-
-      for(size_t e=0;e<plan_[d].size();e++)
-        os<<plan_[d][e]<<" ";
-
+    for(size_t dia=0; dia < plan_.size(); dia++){
+      os<<"Day "<<dia<<": ";
+      for(size_t empleado=0; empleado < plan_[dia].size(); empleado++)
+        os<<plan_[dia][empleado]<<" ";
       os<<"\n";
     }
-  }
-
-  int getDays() const {
-      return plan_.size();
-  }
-
-  int getEmployees() const {
-      if (!plan_.empty()) return plan_[0].size();
-      return 0;
   }
 };
 

@@ -1,15 +1,15 @@
 /**
- ** Universidad de La Laguna
- ** Escuela Superior de Ingeniería y Tecnología
- ** Grado en Ingeniería Informática
- ** Asignatura: Diseño y Análisis de Algoritmos
- ** Curso: 3º
- ** Práctica 3: Divide y Vencerás
- ** Autores: Marco Pérez Padilla, Keran Miranda González
- ** Fecha: 03/03/2026
- **
- ** Archivo SchedulingDyV.hpp: Algoritmo Divide y Vencerás para planificación.
- **/
+** Universidad de La Laguna
+** Escuela Superior de Ingeniería y Tecnología
+** Grado en Ingeniería Informática
+** Asignatura: Diseño y Análisis de Algoritmos
+** Curso: 3º
+** Práctica 3: Divide y Vencerás
+** Autores: Marco Pérez Padilla, Keran Miranda González
+** Fecha: 07/03/2026
+**
+** Archivo SchedulingDyV.hpp: Algoritmo Divide y Vencerás para planificación
+**/
 
 #ifndef SCHEDULING_DYV_HPP
 #define SCHEDULING_DYV_HPP
@@ -24,182 +24,155 @@
 #include <algorithm>
 
 /**
- * @brief Algoritmo Divide y Vencerás para el problema de planificación.
+ * @brief Algoritmo Divide y Vencerás para el problema de planificación de turnos.
  *
  * División: partir el horizonte de días por la mitad.
- *   - Los días de descanso de cada empleado (freeDays) son índices absolutos;
- *     se reparten según a qué mitad pertenecen y se reindexan localmente.
- *
- * Caso base (1 día):
- *   - Si el empleado tiene ese día marcado como descanso → -1.
- *   - Si no → turno de mayor satisfacción (greedy).
- *
- * Combinación:
- *   - Concatenar los planes de ambas mitades.
- *   - Recalcular el score con los datos de la instancia combinada.
+ * Caso base: un único día → greedy (turno con mayor satisfacción si no es descanso).
+ * Combinación: concatenar planes y sumar scores parciales.
  */
-class SchedulingDyV
-    : public DivideYVenceras<InstanciaScheduling, SolucionScheduling> {
-
+class SchedulingDyV : public DivideYVenceras<InstanciaScheduling, SolucionScheduling> {
  public:
-
+  /**
+   * @brief Devuelve el nombre del algoritmo
+   * @return const char* con el nombre
+   */
   const char* name() const override { return "SchedulingDyV"; }
 
  protected:
-
-  // ══════════════════════════════════════════════════════════════════════
-  //  Caso base: 1 solo día
-  // ══════════════════════════════════════════════════════════════════════
-
+  /**
+   * @brief Determina si la instancia es lo suficientemente pequeña
+   *        para resolverse de forma directa (1 día).
+   * @param inst InstanciaScheduling a evaluar
+   * @return true si es un solo día, false en caso contrario
+   */
   bool isSmall(const InstanciaScheduling& inst) const override {
     return inst.getDays() == 1;
   }
 
   /**
-   * @brief Resuelve greedy un único día (día local 0).
+   * @brief Resuelve el caso base de un único día de forma greedy.
    *
    * Para cada empleado:
-   *  - Si el día 0 está en su lista freeDays → descanso (-1).
-   *  - Si no → turno con mayor satisfacción ese día.
+   *  - Si el día 0 está en su lista de freeDays → descanso (-1)
+   *  - Si no → turno con mayor satisfacción
+   *
+   * @param inst InstanciaScheduling de un día
+   * @return SolucionScheduling con la asignación de turnos
    */
-  SolucionScheduling solveSmall(
-      const InstanciaScheduling& inst) const override {
+  SolucionScheduling solveSmall(const InstanciaScheduling& inst) const override {
+    const int empleados = inst.getEmployees();
+    const int turnos    = inst.getShifts();
 
-    const int E = inst.getEmployees();
-    const int T = inst.getShifts();
-
-    SolucionScheduling sol(1, E);
-
-    for (int e = 0; e < E; ++e) {
-
-      // Comprobar si el empleado descansa el día local 0
-      const auto& diasDescanso = inst.getFreeDays(e);
-      bool descansa = std::find(diasDescanso.begin(),
-                                diasDescanso.end(), 0)
-                      != diasDescanso.end();
+    SolucionScheduling sol(1, empleados);
+    for (int empleado = 0; empleado < empleados; ++empleado) {
+      const auto& diasDescanso = inst.getFreeDays(empleado);
+      bool descansa = std::find(diasDescanso.begin(),diasDescanso.end(), 0) != diasDescanso.end();
 
       if (descansa) {
-        sol.set(0, e, -1);   // -1 = descanso
+        sol.set(0, empleado, -1);  
         continue;
       }
 
-      // Greedy: turno de mayor satisfacción
       int mejorTurno = 0;
-      int mejorSat   = inst.getSatisfaction(e, 0, 0);
-      for (int t = 1; t < T; ++t) {
-        int s = inst.getSatisfaction(e, 0, t);
-        if (s > mejorSat) { mejorSat = s; mejorTurno = t; }
+      int mejorSat   = inst.getSatisfaction(empleado, 0, 0);
+      for (int turno = 1; turno < turnos; ++turno) {
+        int s = inst.getSatisfaction(empleado, 0, turno);
+        if (s > mejorSat) { mejorSat = s; mejorTurno = turno; }
       }
-      sol.set(0, e, mejorTurno);
+      sol.set(0, empleado, mejorTurno);
     }
 
-    // Score para 1 día
     sol.setScore(calcularScore(sol, inst));
     return sol;
   }
 
-  // ══════════════════════════════════════════════════════════════════════
-  //  División binaria por mitad de días
-  // ══════════════════════════════════════════════════════════════════════
-
   /**
-   * @brief Divide la instancia en [0, mitad) y [mitad, D).
+   * @brief Divide la instancia en dos subproblemas por mitad de días.
    *
-   * Copia los datos de satisfaction y requiredEmployees correspondientes
-   * a cada mitad. Los días de descanso se filtran por mitad y se reindexan:
-   *   - izquierda: días en [0, mitad)        → se conservan tal cual
-   *   - derecha:   días en [mitad, D)        → se restan mitad (reindexado local)
+   * Días de descanso (freeDays) se reindexan para cada mitad.
+   *
+   * @param inst InstanciaScheduling a dividir
+   * @return par de punteros únicos a InstanciaScheduling: izquierda y derecha
    */
   std::pair<std::unique_ptr<InstanciaScheduling>,
             std::unique_ptr<InstanciaScheduling>>
   dividir(const InstanciaScheduling& inst) const override {
-
-    const int E     = inst.getEmployees();
-    const int D     = inst.getDays();
-    const int T     = inst.getShifts();
-    const int mitad = D / 2;
-    const int resto = D - mitad;
+    const int empleados = inst.getEmployees();
+    const int dias      = inst.getDays();
+    const int turnos    = inst.getShifts();
+    const int mitad     = dias / 2;
+    const int resto     = dias - mitad;
 
     const auto& turnosVec    = inst.getShiftsVector();
     const auto& empleadosVec = inst.getEmployeesVector();
 
-    // ── Crear sub-instancias (satisfaction y required inicializados a 0) ──
+    // sub-instancias
     auto izq = std::make_unique<InstanciaScheduling>(
         turnosVec, empleadosVec, mitad);
     auto der = std::make_unique<InstanciaScheduling>(
         turnosVec, empleadosVec, resto);
 
-    // ── Copiar satisfaction ───────────────────────────────────────────────
-    for (int e = 0; e < E; ++e) {
-      for (int d = 0; d < mitad; ++d)
-        for (int t = 0; t < T; ++t)
-          izq->setSatisfaction(e, d, t, inst.getSatisfaction(e, d, t));
+    // Satisfaccion
+    for (int empleado = 0; empleado < empleados; ++empleado) {
+      for (int dia = 0; dia < mitad; ++dia)
+        for (int turno = 0; turno < turnos; ++turno)
+          izq->setSatisfaction(empleado, dia, turno,
+                               inst.getSatisfaction(empleado, dia, turno));
 
-      for (int d = 0; d < resto; ++d)
-        for (int t = 0; t < T; ++t)
-          der->setSatisfaction(e, d, t,
-              inst.getSatisfaction(e, mitad + d, t));
+      for (int dia = 0; dia < resto; ++dia)
+        for (int turno = 0; turno < turnos; ++turno)
+          der->setSatisfaction(empleado, dia, turno,
+              inst.getSatisfaction(empleado, mitad + dia, turno));
     }
 
-    // ── Copiar requiredEmployees ──────────────────────────────────────────
-    for (int d = 0; d < mitad; ++d)
-      for (int t = 0; t < T; ++t)
-        izq->setRequired(d, t, inst.getRequired(d, t));
+    // requiredEmployees
+    for (int dia = 0; dia < mitad; ++dia)
+      for (int turno = 0; turno < turnos; ++turno)
+        izq->setRequired(dia, turno, inst.getRequired(dia, turno));
 
-    for (int d = 0; d < resto; ++d)
-      for (int t = 0; t < T; ++t)
-        der->setRequired(d, t, inst.getRequired(mitad + d, t));
+    for (int dia = 0; dia < resto; ++dia)
+      for (int turno = 0; turno < turnos; ++turno)
+        der->setRequired(dia, turno, inst.getRequired(mitad + dia, turno));
 
-    // ── Repartir días de descanso ─────────────────────────────────────────
-    // freeDays_[e] contiene índices absolutos de días de descanso.
-    // Los que caen en [0, mitad) van a izq sin cambio.
-    // Los que caen en [mitad, D) van a der reindexados (día - mitad).
-    for (int e = 0; e < E; ++e) {
-      for (int diaDescanso : inst.getFreeDays(e)) {
+    // días de descanso
+    for (int empleado = 0; empleado < empleados; ++empleado) {
+      for (int diaDescanso : inst.getFreeDays(empleado)) {
         if (diaDescanso < mitad)
-          izq->setFreeDays(e, diaDescanso);
+          izq->setFreeDays(empleado, diaDescanso);
         else
-          der->setFreeDays(e, diaDescanso - mitad);
+          der->setFreeDays(empleado, diaDescanso - mitad);
       }
     }
 
     return {std::move(izq), std::move(der)};
   }
 
-  // ══════════════════════════════════════════════════════════════════════
-  //  Combinación
-  // ══════════════════════════════════════════════════════════════════════
-
   /**
-   * @brief Concatena los planes de s1 y s2 y recalcula el score global.
+   * @brief Combina dos sub-soluciones en una solución completa.
    *
-   * El score combinado se calcula sumando los scores individuales de cada
-   * sub-solución, que ya fueron calculados correctamente sobre sus propias
-   * sub-instancias. No se puede recalcular sobre la instancia original aquí
-   * porque combinar solo recibe soluciones; la suma de scores parciales es
-   * la aproximación correcta dentro del esquema D&V.
+   * Concatena planes de s1 y s2 y suma los scores parciales.
+   *
+   * @param s1 Solución izquierda
+   * @param s2 Solución derecha
+   * @return SolucionScheduling combinada
    */
-  SolucionScheduling combinar(
-      const SolucionScheduling& s1,
-      const SolucionScheduling& s2) const override {
-
+  SolucionScheduling combinar(const SolucionScheduling& s1, const SolucionScheduling& s2) const override {
     const int D1 = s1.getDays();
     const int D2 = s2.getDays();
     const int E  = s1.getEmployees();
 
     SolucionScheduling res(D1 + D2, E);
+    // s1
+    for (int dia = 0; dia < D1; ++dia)
+      for (int empleado = 0; empleado < E; ++empleado)
+        res.set(dia, empleado, s1.get(dia, empleado));
 
-    // Copiar s1
-    for (int d = 0; d < D1; ++d)
-      for (int e = 0; e < E; ++e)
-        res.set(d, e, s1.get(d, e));
+    // s2 con desplazamiento de días
+    for (int dia = 0; dia < D2; ++dia)
+      for (int empleado = 0; empleado < E; ++empleado)
+        res.set(D1 + dia, empleado, s2.get(dia, empleado));
 
-    // Copiar s2 (desplazado D1 días)
-    for (int d = 0; d < D2; ++d)
-      for (int e = 0; e < E; ++e)
-        res.set(D1 + d, e, s2.get(d, e));
-
-    // Score = suma de ambas sub-soluciones (calculados en sus sub-instancias)
+    // Score total = suma de scores parciales
     res.setScore(s1.score() + s2.score());
 
     return res;
@@ -207,46 +180,37 @@ class SchedulingDyV
 
  private:
 
-  // ══════════════════════════════════════════════════════════════════════
-  //  Cálculo del score
-  // ══════════════════════════════════════════════════════════════════════
-
   /**
-   * @brief Calcula f(x) = Σ satisfaccion + Σ turnos_cubiertos * 100
+   * @brief Calcula el score de una solución.
    *
-   * Un turno está cubierto si el número de empleados asignados a él ese día
-   * es >= requiredEmployees[d][t].
+   * Score = suma de satisfacciones + 100 * número de turnos cubiertos
    *
-   * @param sol  Solución a evaluar.
-   * @param inst Instancia de referencia (mismas dimensiones que sol).
+   * @param sol SoluciónScheduling a evaluar
+   * @param inst InstanciaScheduling de referencia
+   * @return entero con el score calculado
    */
-  static int calcularScore(const SolucionScheduling& sol,
-                            const InstanciaScheduling& inst) {
-    const int D = inst.getDays();
-    const int E = inst.getEmployees();
-    const int T = inst.getShifts();
+  static int calcularScore(const SolucionScheduling& sol, const InstanciaScheduling& inst) {
+    const int dias     = inst.getDays();
+    const int empleados = inst.getEmployees();
+    const int turnos   = inst.getShifts();
 
     int sumaSat        = 0;
     int turnosCubiertos = 0;
-
-    for (int d = 0; d < D; ++d) {
-      for (int t = 0; t < T; ++t) {
-
+    for (int dia = 0; dia < dias; ++dia) {
+      for (int turno = 0; turno < turnos; ++turno) {
         int asignados = 0;
-        for (int e = 0; e < E; ++e) {
-          if (sol.get(d, e) == t) {
-            sumaSat += inst.getSatisfaction(e, d, t);
+        for (int empleado = 0; empleado < empleados; ++empleado) {
+          if (sol.get(dia, empleado) == turno) {
+            sumaSat += inst.getSatisfaction(empleado, dia, turno);
             ++asignados;
           }
         }
-
-        if (asignados >= inst.getRequired(d, t))
+        if (asignados >= inst.getRequired(dia, turno))
           ++turnosCubiertos;
       }
     }
-
     return sumaSat + turnosCubiertos * 100;
   }
 };
 
-#endif // SCHEDULING_DYV_HPP
+#endif 

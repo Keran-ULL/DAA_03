@@ -82,4 +82,13 @@ class TimeMeasurementException : public DAAException {
       : DAAException("Error during time measurement") {}
 };
 
+/**
+ * @brief Lanzada cuando ocurre un error al parsear un archivo JSON
+ */
+class JSONParseException : public DAAException {
+ public:
+  explicit JSONParseException(const std::string& detail)
+      : DAAException("JSON parse error: " + detail) {}
+};
+
 #endif
