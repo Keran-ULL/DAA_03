@@ -4,7 +4,7 @@
 ** Grado en Ingeniería Informática
 ** Asignatura: Diseño y Análisis de Algoritmos
 ** Curso: 3º
-** Práctica 1: Complejidad Computacional
+** Práctica 3: Divide y Vencerás
 ** Autores: Marco Pérez Padilla, Keran Miranda González
 ** Fecha: 03/03/2026
 **
@@ -17,22 +17,7 @@
 
 #include "help/help_functions.h"
 #include "execution/execution_funcions.h"
-
 #include "exceptions/exceptions.h"
-
-#include "generators/GeneradorVectores.h"
-#include "analysis/MedidorTiempos.h"
-#include "analysis/TablaResultados.h"
-
-#include "ordenacion/mergeSort.h"
-#include "ordenacion/quickSort.h"
-
-#include "scheduling/InstanciaScheduling.hpp"
-#include "scheduling/SolucionSchedulling.hpp"
-#include "scheduling/SchedulingParser.hpp"
-#include "scheduling/SchedulingDyV.hpp"
-
-using namespace std;
 
 /**
  * @brief Función principal del programa.
@@ -41,7 +26,6 @@ using namespace std;
  * y número de experimentos. Soporta tanto ordenación como Scheduling.
  */
 int main(int argc, char* argv[]) {
-  // Validar argumentos de línea de comandos
   int argStatus = ValidateArguments(argc, argv);
   if (argStatus != -1) return argStatus;
 
