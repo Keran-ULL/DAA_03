@@ -16,6 +16,8 @@
 #include <string>
 
 #include "help/help_functions.h"
+#include "execution/execution_funcions.h"
+
 #include "exceptions/exceptions.h"
 
 #include "generators/GeneradorVectores.h"
@@ -32,141 +34,63 @@
 
 using namespace std;
 
-/* ===========================================
-   FUNCIONES AUXILIARES DE EJECUCIÓN
-   =========================================== */
+/**
+ * @brief Función principal del programa.
+ *
+ * Permite seleccionar modo de ejecución, algoritmo, tamaño de instancia
+ * y número de experimentos. Soporta tanto ordenación como Scheduling.
+ */
+int main(int argc, char* argv[]) {
+  // Validar argumentos de línea de comandos
+  int argStatus = ValidateArguments(argc, argv);
+  if (argStatus != -1) return argStatus;
 
-// ==== Ordenación ====
-void EjecutarDebugOrdenacion(int algoritmo, size_t size) {
-    GeneradorVectores<int> generador(size, 0, 100);
-    auto instanciaBase = generador.generar();
-    auto* instancia = dynamic_cast<InstanciaVector<int>*>(instanciaBase.get());
+  while (true) {
+    int modo = AskExecutionMode();
 
-    cout << "\nInstancia generada:\n";
-    instancia->mostrar(cout);
-    cout << "\n\n";
-
-    if (algoritmo == 1 || algoritmo == 3) {
-        MergeSort<int> ms;
-        auto solucion = ms.ejecutar(*instancia);
-        cout << "Resultado MergeSort:\n";
-        solucion.mostrar(cout);
-        cout << endl;
+    if (modo == 0) {
+      std::cout << "Saliendo...\n";
+      break;
     }
 
-    if (algoritmo == 2 || algoritmo == 3) {
-        QuickSort<int> qs;
-        auto solucion = qs.ejecutar(*instancia);
-        cout << "Resultado QuickSort:\n";
-        solucion.mostrar(cout);
-        cout << endl;
-    }
-}
-
-void EjecutarNormalOrdenacion(int algoritmo, size_t size, int experimentos) {
-    TablaResultados tabla;
-
-    for (int i = 0; i < experimentos; ++i) {
-        GeneradorVectores<int> generador(size, 0, 10000);
-        auto instanciaBase = generador.generar();
-        auto* instancia = dynamic_cast<InstanciaVector<int>*>(instanciaBase.get());
-
-        if (algoritmo == 1 || algoritmo == 3) {
-            MergeSort<int> ms;
-            double tiempo = MedidorTiempos::medir<MergeSort<int>,
-                                                   InstanciaVector<int>,
-                                                   SolucionVector<int>>(ms, *instancia);
-            tabla.agregarResultado(ms.name(), size, tiempo);
-        }
-
-        if (algoritmo == 2 || algoritmo == 3) {
-            QuickSort<int> qs;
-            double tiempo = MedidorTiempos::medir<QuickSort<int>,
-                                                   InstanciaVector<int>,
-                                                   SolucionVector<int>>(qs, *instancia);
-            tabla.agregarResultado(qs.name(), size, tiempo);
-        }
+    if (modo != 1 && modo != 2) {
+      std::cout << "Opción inválida, intente de nuevo.\n";
+      continue;
     }
 
-    cout << "\n=== RESULTADOS ===\n";
-    tabla.mostrar();
-}
+    int algoritmo = AskAlgorithmChoice();
+    if (algoritmo < 1 || algoritmo > 3) {
+      std::cout << "Opción de algoritmo inválida.\n";
+      continue;
+    }
 
-// ==== Scheduling ====
-void EjecutarDebugScheduling(const std::string& archivo) {
-    auto instancia = SchedulingParser::parse(archivo);
+    size_t size = AskInstanceSize();
+    int experimentos = 1;
+    if (modo == 1) { 
+      experimentos = AskNumberOfExperiments();
+    }
 
-    cout << "Instancia Scheduling cargada:\n";
-    instancia.mostrar(cout);
+    if (modo == 2) {  
+      EjecutarDebugOrdenacion(algoritmo, size);
+    } else { 
+      EjecutarNormalOrdenacion(algoritmo, size, experimentos);
+    }
 
-    SchedulingDyV dyv;
-    auto solucion = dyv.ejecutar(instancia);
+    std::cout << "\n=== EJECUCIÓN DE SCHEDULING ===\n";
+    std::string archivo;
+    std::cout << "Ingrese ruta del archivo JSON de Scheduling: ";
+    std::cin >> archivo;
 
-    cout << "\nSolución obtenida:\n";
-    solucion.mostrar(cout);
-}
-
-void EjecutarNormalScheduling(const std::string& archivo) {
-    auto instancia = SchedulingParser::parse(archivo);
-
-    SchedulingDyV dyv;
-    auto tiempo = MedidorTiempos::medir<SchedulingDyV,
-                                        InstanciaScheduling,
-                                        SolucionScheduling>(dyv, instancia);
-
-    cout << "Tiempo de ejecución SchedulingDyV: " << tiempo << " s\n";
-}
-
-/* ===========================================
-   MAIN
-   =========================================== */
-
-int main() {
     try {
-        cout << "Seleccione tipo de problema:\n";
-        cout << "1 - Ordenación (MergeSort/QuickSort)\n";
-        cout << "2 - Scheduling (planificación empleados)\n";
-        int problema;
-        cin >> problema;
-
-        if (problema == 1) {
-            int modo = AskExecutionMode();
-            if (modo == 0) return 0;
-
-            int algoritmo = AskAlgorithmChoice();
-            size_t size = AskInstanceSize();
-
-            if (modo == 1) {
-                int experimentos = AskNumberOfExperiments();
-                EjecutarNormalOrdenacion(algoritmo, size, experimentos);
-            } else {
-                EjecutarDebugOrdenacion(algoritmo, size);
-            }
-        }
-        else if (problema == 2) {
-            cout << "Ingrese ruta del archivo JSON de instancia: ";
-            string archivo;
-            cin >> archivo;
-
-            int modo = AskExecutionMode();
-            if (modo == 0) return 0;
-
-            if (modo == 1)
-                EjecutarNormalScheduling(archivo);
-            else
-                EjecutarDebugScheduling(archivo);
-        }
-        else {
-            cerr << "Problema inválido\n";
-            return 1;
-        }
+      if (modo == 2) {
+        EjecutarDebugScheduling(archivo);
+      } else {
+        EjecutarNormalScheduling(archivo);
+      }
+    } catch (const std::exception& e) {
+      std::cout << "Error al ejecutar Scheduling: " << e.what() << std::endl;
     }
-    catch (const DAAException& e) {
-        cerr << "Error: " << e.what() << endl;
-    }
-    catch (const exception& e) {
-        cerr << "Unexpected error: " << e.what() << endl;
-    }
-
-    return 0;
+    std::cout << "\nEjecución completa.\n";
+  }
+  return 0;
 }

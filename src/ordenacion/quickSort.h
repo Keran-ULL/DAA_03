@@ -4,7 +4,7 @@
 ** Grado en Ingenieria Informatica
 ** Asignatura: Diseño y Analisis de Algoritmos
 ** Curso: 3º
-** Practica 2: Divide y Venceras
+** Práctica 3: Divide y Venceras
 ** Autores: Marco Pérez Padilla, Keran Miranda González
 ** Fecha: 03/03/2026
 **

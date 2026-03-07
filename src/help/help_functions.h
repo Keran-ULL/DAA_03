@@ -4,7 +4,7 @@
 ** Grado en Ingeniería Informática
 ** Asignatura: Diseño y Análisis de Algoritmos
 ** Curso: 3º
-** Práctica 1: Complejidad Computacional
+** Práctica 3: Divide Y Vencerás
 ** Autor: Marco Pérez Padilla, Keran Miranda González
 ** Correo: alu0101469348@ull.edu.es, alu0101485904@ull.edu.es
 ** Fecha: 03/03/2026
@@ -17,32 +17,17 @@
 
 #include <string>
 
-// ================================
-// AYUDA Y USO
-// ================================
-
+// Ayuda
 void ShowHelp();
 void ShowUsage();
 int ValidateArguments(int argc, char* argv[]);
 
-// ================================
-// MENÚS
-// ================================
-
+// Menus
 void ShowMainMenu();
 void ShowAlgorithmMenu();
-
-int AskExecutionMode();      // 1 = Normal | 2 = Debug
-int AskAlgorithmChoice();    // 1 = MergeSort | 2 = QuickSort | 3 = Ambos
+int AskExecutionMode();    
+int AskAlgorithmChoice();    
 size_t AskInstanceSize();
 int AskNumberOfExperiments();
-
-// ================================
-// UTILIDADES
-// ================================
-
-std::string trim(const std::string& str);
-bool isInteger(const std::string& str);
-std::string toUpper(const std::string& str);
 
 #endif
