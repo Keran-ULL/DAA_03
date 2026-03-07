@@ -15,8 +15,8 @@ template <typename InstanciaType, typename SolucionType>
 class DivideYVenceras : public Algoritmo<InstanciaType, SolucionType> {
 public:
     SolucionType ejecutar(const InstanciaType& instancia) final {
-      if (esPequeno(instancia)) {
-        return resolverPequeno(instancia);
+      if (isSmall(instancia)) {
+        return solveSmall(instancia);
       }
       auto subproblemas = dividir(instancia);
       SolucionType sol1 = ejecutar(*subproblemas.first);
@@ -25,8 +25,8 @@ public:
     }
 
 protected:
-    virtual bool esPequeno(const InstanciaType& instancia) const = 0;
-    virtual SolucionType resolverPequeno(const InstanciaType& instancia) const = 0;
+    virtual bool isSmall(const InstanciaType& instancia) const = 0;
+    virtual SolucionType solveSmall(const InstanciaType& instancia) const = 0;
 
     /**
      * @brief Divide en dos subproblemas y devuelve punteros únicos.

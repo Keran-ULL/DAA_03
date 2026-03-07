@@ -17,7 +17,7 @@ public:
      * @brief Devuelve el tamaño de la instancia.
      *        Útil para experimentación.
      */
-    virtual size_t tamano() const = 0;
+    virtual size_t size() const = 0;
 
     /**
      * @brief Muestra la instancia por pantalla.

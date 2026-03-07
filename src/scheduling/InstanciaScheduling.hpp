@@ -40,7 +40,7 @@ public:
     freeDays_.resize(employees.size());
   }
 
-  size_t tamano() const override {
+  size_t size() const override {
     return days_;
   }
 

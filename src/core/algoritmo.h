@@ -21,9 +21,9 @@ public:
     virtual SolucionType ejecutar(const InstanciaType& instancia) = 0;
 
     /**
-     * @brief Devuelve el nombre del algoritmo.
+     * @brief Devuelve el name del algoritmo.
      */
-    virtual const char* nombre() const = 0;
+    virtual const char* name() const = 0;
 };
 
 #endif

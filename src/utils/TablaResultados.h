@@ -14,12 +14,12 @@ public:
     /**
      * @brief Añade un resultado a la tabla
      *
-     * @param nombreAlgoritmo Nombre del algoritmo
-     * @param tamano Tamaño de la instancia
+     * @param nameAlgoritmo name del algoritmo
+     * @param size Tamaño de la instancia
      * @param tiempo Tiempo en milisegundos
      */
-    void agregarResultado(const std::string& nombreAlgoritmo, size_t tamano, double tiempo) {
-        resultados.push_back({nombreAlgoritmo, tamano, tiempo});
+    void agregarResultado(const std::string& nameAlgoritmo, size_t size, double tiempo) {
+        resultados.push_back({nameAlgoritmo, size, tiempo});
     }
 
     /**
@@ -32,7 +32,7 @@ public:
         std::cout << "---------------------------------------\n";
         for (const auto& r : resultados) {
             std::cout << std::left << std::setw(15) << r.algoritmo
-                      << std::setw(10) << r.tamano
+                      << std::setw(10) << r.size
                       << std::setw(12) << r.tiempo << "\n";
         }
     }
@@ -40,7 +40,7 @@ public:
 private:
     struct Resultado {
       std::string algoritmo;
-      size_t tamano;
+      size_t size;
       double tiempo;
     };
     std::vector<Resultado> resultados;

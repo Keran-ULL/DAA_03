@@ -23,79 +23,68 @@
 /**
  * @brief Implementación de QuickSort usando Divide y Vencerás
  */
-template <typename T>
-class QuickSort 
-: public DivideYVenceras<InstanciaVector<T>, SolucionVector<T>> {
+template <typename T> class QuickSort  : public DivideYVenceras<InstanciaVector<T>, SolucionVector<T>> {
+ public:
+  const char* name() const override {
+    return "QuickSort";
+  }
 
-public:
+ protected:
+  /**
+   * @brief Function that determines if the base case is enough small to be solved differently
+   * @param InstanciaVectorT instance to be checked
+   * @returns boolean. True if it's small enough, false otherwise
+   */
+  bool isSmall(const InstanciaVector<T>& instancia) const override {return instancia.getDatos().size() <= 1;}
 
-    const char* nombre() const override {
-        return "QuickSort";
+  /**
+   * @brief Resuelve el caso base (instancia pequeña) directamente
+   * @param instancia InstanciaVector<T> considerada pequeña
+   * @returns SolucionVector<T> con los mismos elementos de la instancia
+   */
+  SolucionVector<T> solveSmall(const InstanciaVector<T>& instancia) const override {return SolucionVector<T>(instancia.getDatos());}
+
+  /**
+   * @brief Divide la instancia en dos subproblemas según el pivote
+   * @param instancia InstanciaVector<T> que se va a dividir
+   * @returns std::pair con dos punteros únicos a InstanciaVector<T>, 
+   *          el primero con los elementos menores o iguales al pivote y 
+   *          el segundo con los mayores
+   */
+  std::pair<
+    std::unique_ptr<InstanciaVector<T>>,
+    std::unique_ptr<InstanciaVector<T>>
+  > dividir(const InstanciaVector<T>& instancia) const override {
+    const auto& datos = instancia.getDatos();
+
+    T pivote = datos[0];
+    std::vector<T> menores, mayores;
+    for (size_t i = 1; i < datos.size(); ++i) {
+      (datos[i] < pivote ? menores : mayores).push_back(datos[i]);
     }
 
-protected:
+    menores.push_back(pivote);
+    return {std::make_unique<InstanciaVector<T>>(menores), std::make_unique<InstanciaVector<T>>(mayores)};
+  }
 
-    // Caso base: instancia pequeña
-    bool esPequeno(const InstanciaVector<T>& instancia) const override {
-        return instancia.getDatos().size() <= 1;
-    }
+  /**
+   * @brief Combina las soluciones de dos subproblemas en una solución completa
+   * @param s1 SolucionVector<T> del subproblema izquierdo
+   * @param s2 SolucionVector<T> del subproblema derecho
+   * @returns SolucionVector<T> combinando s1 y s2 en orden
+   */
+  SolucionVector<T> combinar(const SolucionVector<T>& s1, const SolucionVector<T>& s2) const override {
+    const auto& menores = s1.datos();
+    const auto& mayores = s2.datos();
 
-    // Resolver instancia pequeña
-    SolucionVector<T> resolverPequeno(
-        const InstanciaVector<T>& instancia
-    ) const override {
-        return SolucionVector<T>(instancia.getDatos());
-    }
+    std::vector<T> resultado;
+    resultado.reserve(menores.size() + mayores.size());
 
-    // Dividir la instancia en dos subproblemas
-    std::pair<
-        std::unique_ptr<InstanciaVector<T>>,
-        std::unique_ptr<InstanciaVector<T>>
-    >
-    dividir(const InstanciaVector<T>& instancia) const override {
+    resultado.insert(resultado.end(), menores.begin(), menores.end());
+    resultado.insert(resultado.end(), mayores.begin(), mayores.end());
 
-        const auto& datos = instancia.getDatos();
-
-        T pivote = datos[0];
-        std::vector<T> menores, mayores;
-
-        for (size_t i = 1; i < datos.size(); ++i) {
-            if (datos[i] < pivote)
-                menores.push_back(datos[i]);
-            else
-                mayores.push_back(datos[i]);
-        }
-
-        // El pivote cierra la partición izquierda
-        menores.push_back(pivote);
-
-        // mayores puede ser vacío: lo gestiona esPequeno + resolverPequeno
-        return {
-            std::make_unique<InstanciaVector<T>>(menores),
-            std::make_unique<InstanciaVector<T>>(mayores)
-        };
-    }
-
-    // Combinar las soluciones de los subproblemas
-    SolucionVector<T> combinar(
-        const SolucionVector<T>& s1,
-        const SolucionVector<T>& s2
-    ) const override {
-
-        const auto& menores = s1.datos();
-        const auto& mayores = s2.datos();
-
-        std::vector<T> resultado;
-        resultado.reserve(menores.size() + mayores.size());
-
-        resultado.insert(resultado.end(), menores.begin(), menores.end());
-        resultado.insert(resultado.end(), mayores.begin(), mayores.end());
-
-        return SolucionVector<T>(resultado);
-    }
-
+    return SolucionVector<T>(resultado);
+  }
 };
 
 #endif
-
-

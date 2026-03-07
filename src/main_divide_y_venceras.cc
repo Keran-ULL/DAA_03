@@ -38,8 +38,8 @@ using namespace std;
    =========================================== */
 
 // ==== Ordenación ====
-void EjecutarDebugOrdenacion(int algoritmo, size_t tamano) {
-    GeneradorVectores<int> generador(tamano, 0, 100);
+void EjecutarDebugOrdenacion(int algoritmo, size_t size) {
+    GeneradorVectores<int> generador(size, 0, 100);
     auto instanciaBase = generador.generar();
     auto* instancia = dynamic_cast<InstanciaVector<int>*>(instanciaBase.get());
 
@@ -64,11 +64,11 @@ void EjecutarDebugOrdenacion(int algoritmo, size_t tamano) {
     }
 }
 
-void EjecutarNormalOrdenacion(int algoritmo, size_t tamano, int experimentos) {
+void EjecutarNormalOrdenacion(int algoritmo, size_t size, int experimentos) {
     TablaResultados tabla;
 
     for (int i = 0; i < experimentos; ++i) {
-        GeneradorVectores<int> generador(tamano, 0, 10000);
+        GeneradorVectores<int> generador(size, 0, 10000);
         auto instanciaBase = generador.generar();
         auto* instancia = dynamic_cast<InstanciaVector<int>*>(instanciaBase.get());
 
@@ -77,7 +77,7 @@ void EjecutarNormalOrdenacion(int algoritmo, size_t tamano, int experimentos) {
             double tiempo = MedidorTiempos::medir<MergeSort<int>,
                                                    InstanciaVector<int>,
                                                    SolucionVector<int>>(ms, *instancia);
-            tabla.agregarResultado(ms.nombre(), tamano, tiempo);
+            tabla.agregarResultado(ms.name(), size, tiempo);
         }
 
         if (algoritmo == 2 || algoritmo == 3) {
@@ -85,7 +85,7 @@ void EjecutarNormalOrdenacion(int algoritmo, size_t tamano, int experimentos) {
             double tiempo = MedidorTiempos::medir<QuickSort<int>,
                                                    InstanciaVector<int>,
                                                    SolucionVector<int>>(qs, *instancia);
-            tabla.agregarResultado(qs.nombre(), tamano, tiempo);
+            tabla.agregarResultado(qs.name(), size, tiempo);
         }
     }
 
@@ -135,13 +135,13 @@ int main() {
             if (modo == 0) return 0;
 
             int algoritmo = AskAlgorithmChoice();
-            size_t tamano = AskInstanceSize();
+            size_t size = AskInstanceSize();
 
             if (modo == 1) {
                 int experimentos = AskNumberOfExperiments();
-                EjecutarNormalOrdenacion(algoritmo, tamano, experimentos);
+                EjecutarNormalOrdenacion(algoritmo, size, experimentos);
             } else {
-                EjecutarDebugOrdenacion(algoritmo, tamano);
+                EjecutarDebugOrdenacion(algoritmo, size);
             }
         }
         else if (problema == 2) {

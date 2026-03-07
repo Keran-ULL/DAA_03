@@ -43,7 +43,7 @@ class SchedulingDyV
 
  public:
 
-  const char* nombre() const override { return "SchedulingDyV"; }
+  const char* name() const override { return "SchedulingDyV"; }
 
  protected:
 
@@ -51,7 +51,7 @@ class SchedulingDyV
   //  Caso base: 1 solo día
   // ══════════════════════════════════════════════════════════════════════
 
-  bool esPequeno(const InstanciaScheduling& inst) const override {
+  bool isSmall(const InstanciaScheduling& inst) const override {
     return inst.getDays() == 1;
   }
 
@@ -62,7 +62,7 @@ class SchedulingDyV
    *  - Si el día 0 está en su lista freeDays → descanso (-1).
    *  - Si no → turno con mayor satisfacción ese día.
    */
-  SolucionScheduling resolverPequeno(
+  SolucionScheduling solveSmall(
       const InstanciaScheduling& inst) const override {
 
     const int E = inst.getEmployees();

@@ -28,8 +28,8 @@ class GeneradorVectores : public GeneradorInstancias {
   T max_;
 
  public:
-  GeneradorVectores(size_t tamano, T min, T max)
-      : tamano_(tamano), min_(min), max_(max) {
+  GeneradorVectores(size_t size, T min, T max)
+      : tamano_(size), min_(min), max_(max) {
 
     if (tamano_ == 0) {
       throw InvalidSizeException(tamano_);
