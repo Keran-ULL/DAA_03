@@ -26,9 +26,7 @@ class InstanciaVector : public Instancia {
 
  public:
   explicit InstanciaVector(const std::vector<T>& datos) : datos_(datos) {
-    if (datos_.empty()) {
-      throw InvalidSizeException(0);
-    }
+  
   }
 
   const std::vector<T>& getDatos() const {

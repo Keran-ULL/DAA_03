@@ -4,15 +4,15 @@
 ** Grado en Ingenieria Informatica
 ** Asignatura: Diseño y Analisis de Algoritmos
 ** Curso: 3º
-** Practica 1/2: Divide y Venceras
+** Practica 2: Divide y Venceras
 ** Autores: Marco Pérez Padilla, Keran Miranda González
 ** Fecha: 03/03/2026
 **
 ** Archivo QuickSort.h: Implementación del algoritmo QuickSort
 **/
 
-#ifndef QUICK_SORT_HPP
-#define QUICK_SORT_HPP
+#ifndef QUICK_SORT_H
+#define QUICK_SORT_H
 
 #include "../core/divideYvenceras.h"
 #include "InstanciaVector.h"
@@ -56,25 +56,20 @@ protected:
 
         const auto& datos = instancia.getDatos();
 
-        if (datos.size() <= 1) {
-            return {
-                std::make_unique<InstanciaVector<T>>(datos),
-                std::make_unique<InstanciaVector<T>>(std::vector<T>{})
-            };
-        }
-
         T pivote = datos[0];
-
-        std::vector<T> menores;
-        std::vector<T> mayores;
+        std::vector<T> menores, mayores;
 
         for (size_t i = 1; i < datos.size(); ++i) {
-            if (datos[i] <= pivote)
+            if (datos[i] < pivote)
                 menores.push_back(datos[i]);
             else
                 mayores.push_back(datos[i]);
         }
 
+        // El pivote cierra la partición izquierda
+        menores.push_back(pivote);
+
+        // mayores puede ser vacío: lo gestiona esPequeno + resolverPequeno
         return {
             std::make_unique<InstanciaVector<T>>(menores),
             std::make_unique<InstanciaVector<T>>(mayores)
