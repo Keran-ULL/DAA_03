@@ -10,6 +10,7 @@
 **
 ** Archivo main.cpp: Programa principal
 **/
+
 #include <iostream>
 #include <memory>
 #include <string>
@@ -17,15 +18,13 @@
 #include "help/help_functions.h"
 #include "exceptions/exceptions.h"
 
-#include "utils/GeneradorVectores.h"
-#include "utils/MedidorTiempos.h"
-#include "utils/TablaResultados.h"
+#include "generators/GeneradorVectores.h"
+#include "analysis/MedidorTiempos.h"
+#include "analysis/TablaResultados.h"
 
-// Ordenación
 #include "ordenacion/mergeSort.h"
 #include "ordenacion/quickSort.h"
 
-// Scheduling
 #include "scheduling/InstanciaScheduling.hpp"
 #include "scheduling/SolucionSchedulling.hpp"
 #include "scheduling/SchedulingParser.hpp"

@@ -2,7 +2,7 @@
 #define SCHEDULING_PARSER_HPP
 
 #include "InstanciaScheduling.hpp"
-#include "../utils/json.hpp"
+#include "../libreries/json.hpp"
 #include <fstream>
 #include <vector>
 #include <string>
