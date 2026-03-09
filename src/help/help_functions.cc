@@ -144,6 +144,14 @@ void RunSortingMenu() {
   } else {
     EjecutarNormalOrdenacion(algoritmo, size, experimentos);
   }
+
+  std::string salida = AskSaveOption();
+  if (!salida.empty()) {
+    if (modo == 2)
+      EjecutarDebugOrdenacion(algoritmo, size, salida);
+    else
+      EjecutarNormalOrdenacion(algoritmo, size, experimentos, salida);
+  }
 }
 
 /**
@@ -160,7 +168,31 @@ void RunSchedulingMenu() {
     } else {
       EjecutarNormalScheduling(archivo);
     }
+
+    std::string salida = AskSaveOption();
+    if (!salida.empty()) {
+      if (modo == 2)
+        EjecutarDebugScheduling(archivo, salida);
+      else
+        EjecutarNormalScheduling(archivo, salida);
+    }
   } catch (const std::exception& e) {
     std::cout << "Error al ejecutar Scheduling: " << e.what() << std::endl;
   }
+}
+
+/**
+ * @brief Pregunta al usuario si desea guardar, devuelve ruta o cadena vacía
+ */
+std::string AskSaveOption() {
+  char resp;
+  std::cout << "¿Desea guardar los resultados en un archivo? (s/n): ";
+  std::cin >> resp;
+  if (resp == 's' || resp == 'S') {
+    std::string filename;
+    std::cout << "Ruta del archivo de salida: ";
+    std::cin >> filename;
+    return filename;
+  }
+  return "";
 }

@@ -30,5 +30,9 @@ void EjecutarDebugOrdenacion(int algoritmo, size_t size);
 void EjecutarNormalOrdenacion(int algoritmo, size_t size, int experimentos);
 void EjecutarDebugScheduling(const std::string& archivo);
 void EjecutarNormalScheduling(const std::string& archivo);
+void EjecutarDebugOrdenacion(int algoritmo, size_t size, const std::string& archivo_salida);
+void EjecutarNormalOrdenacion(int algoritmo, size_t size, int experimentos, const std::string& archivo_salida);
+void EjecutarDebugScheduling(const std::string& archivo, const std::string& archivo_salida);
+void EjecutarNormalScheduling(const std::string& archivo, const std::string& archivo_salida);
 
 #endif

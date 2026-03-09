@@ -46,38 +46,43 @@ class SolucionScheduling : public Solucion {
     int days = plan_.size();
     if (days == 0) return;
     int employees = plan_[0].size();
-    // calcular número de turnos máximo
+
     int maxShift = -1;
-    for (int d = 0; d < days; ++d) {
-      for (int e = 0; e < employees; ++e) {
-        if (plan_[d][e] > maxShift)
-          maxShift = plan_[d][e];
-      }
-    }
-    int shifts = maxShift + 1;
-    // Cabecera
-    os << "            ";
     for (int d = 0; d < days; ++d)
-      os << "Dia " << d + 1 << "   ";
+      for (int e = 0; e < employees; ++e)
+        if (plan_[d][e] > maxShift) maxShift = plan_[d][e];
+    int shifts = (maxShift < 0) ? 1 : maxShift + 1;
+
+    // Ancho de cada columna de día
+    int colWidth = shifts * 3 + 1;
+
+    // Ancho del prefijo Empleado N 
+    int empDigits = (int)std::to_string(employees).size();
+    int prefixWidth = 9 + empDigits + 1;  
+
+    os << std::string(prefixWidth, ' ');
+    for (int d = 0; d < days; ++d) {
+      std::string label = "Dia " + std::to_string(d + 1);
+      int len   = (int)label.size();
+      int left  = (colWidth - len) / 2;
+      int right = colWidth - len - left;
+      os << std::string(left, ' ') << label << std::string(right, ' ');
+    }
     os << "\n";
-    // Filas por empleado
+
     for (int e = 0; e < employees; ++e) {
-      os << "Empleado " << e + 1 << " ";
+      std::string prefix = "Empleado " + std::to_string(e + 1) + " ";
+      os << std::left << std::setw(prefixWidth) << prefix;
       for (int d = 0; d < days; ++d) {
-        int turnoAsignado = plan_[d][e];
-        for (int s = 0; s < shifts; ++s) {
-          if (turnoAsignado == s)
-            os << "[X]";
-          else
-            os << "[ ]";
-        }
+        int turno = plan_[d][e];
+        for (int s = 0; s < shifts; ++s)
+          os << (turno == s ? "[X]" : "[ ]");
         os << " ";
       }
       os << "\n";
     }
-  os << "\n";
-}
-
+    os << "\n";
+  }
 };
 
 #endif
