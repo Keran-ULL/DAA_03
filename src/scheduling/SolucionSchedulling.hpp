@@ -42,14 +42,42 @@ class SolucionScheduling : public Solucion {
   void set(int dia,int empleado,int shift) {plan_[dia][empleado]=shift;}
 
   void mostrar(std::ostream& os) const override {
-    os<<"Score: "<<score_<<"\n";
-    for(size_t dia=0; dia < plan_.size(); dia++){
-      os<<"Day "<<dia<<": ";
-      for(size_t empleado=0; empleado < plan_[dia].size(); empleado++)
-        os<<plan_[dia][empleado]<<" ";
-      os<<"\n";
+    os << "\nScore: " << score_ << "\n\n";
+    int days = plan_.size();
+    if (days == 0) return;
+    int employees = plan_[0].size();
+    // calcular número de turnos máximo
+    int maxShift = -1;
+    for (int d = 0; d < days; ++d) {
+      for (int e = 0; e < employees; ++e) {
+        if (plan_[d][e] > maxShift)
+          maxShift = plan_[d][e];
+      }
     }
-  }
+    int shifts = maxShift + 1;
+    // Cabecera
+    os << "            ";
+    for (int d = 0; d < days; ++d)
+      os << "Dia " << d + 1 << "   ";
+    os << "\n";
+    // Filas por empleado
+    for (int e = 0; e < employees; ++e) {
+      os << "Empleado " << e + 1 << " ";
+      for (int d = 0; d < days; ++d) {
+        int turnoAsignado = plan_[d][e];
+        for (int s = 0; s < shifts; ++s) {
+          if (turnoAsignado == s)
+            os << "[X]";
+          else
+            os << "[ ]";
+        }
+        os << " ";
+      }
+      os << "\n";
+    }
+  os << "\n";
+}
+
 };
 
 #endif

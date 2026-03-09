@@ -13,28 +13,26 @@
 
 #include "help_functions.h"
 #include <iostream>
-#include <sstream>
-#include <algorithm>
-#include <cctype>
+#include <string>
+#include "../execution/execution_funcions.h"
 
 /**
  * @brief Muestra la ayuda completa del programa.
  */
 void ShowHelp() {
-  std::cout << "ANALISIS DE ALGORITMOS - PRACTICA 2\n";
+  std::cout << "ANALISIS DE ALGORITMOS - PRACTICA 3\n";
   std::cout << "Comparador de algoritmos Divide y Venceras\n\n";
-
   std::cout << "Uso:\n";
   std::cout << "  ./programa [--help]\n\n";
-
   std::cout << "Modos de ejecucion:\n";
   std::cout << "  1. Modo normal  -> Comparacion de tiempos\n";
   std::cout << "  2. Modo debug   -> Muestra instancia y solucion\n\n";
-
   std::cout << "Algoritmos disponibles:\n";
   std::cout << "  - MergeSort\n";
   std::cout << "  - QuickSort\n\n";
+  std::cout << "Tambien permite ejecutar el algoritmo de Scheduling.\n";
 }
+
 
 /**
  * @brief Muestra el uso básico del programa.
@@ -44,11 +42,9 @@ void ShowUsage() {
   std::cout << "Ejecuta sin argumentos para modo interactivo.\n";
 }
 
+
 /**
  * @brief Valida los argumentos de entrada del programa.
- * @param argc Número de argumentos
- * @param argv Vector de argumentos
- * @returns 0 si mostró help, -1 si ejecución normal, 1 si argumentos inválidos
  */
 int ValidateArguments(int argc, char* argv[]) {
   if (argc == 2) {
@@ -59,60 +55,59 @@ int ValidateArguments(int argc, char* argv[]) {
     }
   }
   else if (argc == 1) {
-    return -1; 
+    return -1;
   }
-
   ShowUsage();
   return 1;
 }
 
-/**
- * @brief Muestra el menú principal del programa.
- */
-void ShowMainMenu() {
-  std::cout << "\n===== MENU PRINCIPAL =====\n";
-  std::cout << "1. Modo normal (comparacion de tiempos)\n";
-  std::cout << "2. Modo debug (mostrar ejecucion)\n";
-  std::cout << "0. Salir\n";
-}
 
 /**
- * @brief Muestra el menú de selección de algoritmo.
+ * @brief Muestra el menú principal
  */
-void ShowAlgorithmMenu() {
-  std::cout << "\n===== SELECCION DE ALGORITMO =====\n";
-  std::cout << "1. MergeSort\n";
-  std::cout << "2. QuickSort\n";
-  std::cout << "3. Ambos\n";
-}
-
-/**
- * @brief Solicita al usuario seleccionar el modo de ejecución.
- * @returns Opción seleccionada
- */
-int AskExecutionMode() {
+int AskMainOption() {
   int option;
-  ShowMainMenu();
+  std::cout << "\n===== MENU PRINCIPAL =====\n";
+  std::cout << "1. Ejecutar algoritmos de ordenacion\n";
+  std::cout << "2. Ejecutar Scheduling\n";
+  std::cout << "0. Salir\n";
   std::cout << "Seleccione una opcion: ";
   std::cin >> option;
   return option;
 }
 
+
 /**
- * @brief Solicita al usuario seleccionar el algoritmo a ejecutar.
- * @returns Opción seleccionada
+ * @brief Muestra el menú de selección de algoritmo
  */
 int AskAlgorithmChoice() {
   int option;
-  ShowAlgorithmMenu();
+  std::cout << "\n===== SELECCION DE ALGORITMO =====\n";
+  std::cout << "1. MergeSort\n";
+  std::cout << "2. QuickSort\n";
+  std::cout << "3. Ambos\n";
   std::cout << "Seleccione algoritmo: ";
   std::cin >> option;
   return option;
 }
 
+
 /**
- * @brief Solicita al usuario el tamaño de la instancia.
- * @returns Tamaño introducido
+ * @brief Solicita modo de ejecución
+ */
+int AskExecutionMode() {
+  int option;
+  std::cout << "\n===== MODO DE EJECUCION =====\n";
+  std::cout << "1. Modo normal (comparacion de tiempos)\n";
+  std::cout << "2. Modo debug (mostrar ejecucion)\n";
+  std::cout << "Seleccione modo: ";
+  std::cin >> option;
+  return option;
+}
+
+
+/**
+ * @brief Solicita tamaño de instancia
  */
 size_t AskInstanceSize() {
   size_t size;
@@ -121,13 +116,51 @@ size_t AskInstanceSize() {
   return size;
 }
 
+
 /**
- * @brief Solicita al usuario el número de experimentos a realizar.
- * @returns Número de experimentos
+ * @brief Solicita número de experimentos
  */
 int AskNumberOfExperiments() {
   int n;
   std::cout << "Numero de experimentos: ";
   std::cin >> n;
   return n;
+}
+
+
+/**
+ * @brief Ejecuta el submenu completo de ordenación
+ */
+void RunSortingMenu() {
+  int algoritmo = AskAlgorithmChoice();
+  int modo = AskExecutionMode();
+  size_t size = AskInstanceSize();
+  int experimentos = 1;
+  if (modo == 1) {
+    experimentos = AskNumberOfExperiments();
+  }
+  if (modo == 2) {
+    EjecutarDebugOrdenacion(algoritmo, size);
+  } else {
+    EjecutarNormalOrdenacion(algoritmo, size, experimentos);
+  }
+}
+
+/**
+ * @brief Ejecuta el submenu de Scheduling
+ */
+void RunSchedulingMenu() {
+  int modo = AskExecutionMode();
+  std::string archivo;
+  std::cout << "Ingrese ruta del archivo JSON: ";
+  std::cin >> archivo;
+  try {
+    if (modo == 2) {
+      EjecutarDebugScheduling(archivo);
+    } else {
+      EjecutarNormalScheduling(archivo);
+    }
+  } catch (const std::exception& e) {
+    std::cout << "Error al ejecutar Scheduling: " << e.what() << std::endl;
+  }
 }

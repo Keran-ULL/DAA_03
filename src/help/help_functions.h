@@ -21,13 +21,15 @@
 void ShowHelp();
 void ShowUsage();
 int ValidateArguments(int argc, char* argv[]);
-
 // Menus
-void ShowMainMenu();
-void ShowAlgorithmMenu();
-int AskExecutionMode();    
-int AskAlgorithmChoice();    
+int AskMainOption();
+int AskExecutionMode();
+int AskAlgorithmChoice();
 size_t AskInstanceSize();
 int AskNumberOfExperiments();
+// Ejecuciones completas
+void RunSortingMenu();
+void RunSchedulingMenu();
 
 #endif
+

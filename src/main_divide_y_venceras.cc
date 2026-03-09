@@ -10,10 +10,11 @@
 **
 ** Archivo main.cpp: Programa principal
 **/
+/**
+** Archivo main.cpp
+**/
 
 #include <iostream>
-#include <memory>
-#include <string>
 
 #include "help/help_functions.h"
 #include "execution/execution_funcions.h"
@@ -21,60 +22,25 @@
 
 /**
  * @brief Función principal del programa.
- *
- * Permite seleccionar modo de ejecución, algoritmo, tamaño de instancia
- * y número de experimentos. Soporta tanto ordenación como Scheduling.
+ * @param argc Número de argumentos
+ * @param argv Vector de argumentos
+ * @returns Código de salida
  */
 int main(int argc, char* argv[]) {
   int argStatus = ValidateArguments(argc, argv);
   if (argStatus != -1) return argStatus;
-
   while (true) {
-    int modo = AskExecutionMode();
-
-    if (modo == 0) {
+    int opcion = AskMainOption();
+    if (opcion == 0) {
       std::cout << "Saliendo...\n";
       break;
     }
-
-    if (modo != 1 && modo != 2) {
-      std::cout << "Opción inválida, intente de nuevo.\n";
-      continue;
+    if (opcion == 1) {
+      RunSortingMenu();
     }
-
-    int algoritmo = AskAlgorithmChoice();
-    if (algoritmo < 1 || algoritmo > 3) {
-      std::cout << "Opción de algoritmo inválida.\n";
-      continue;
+    if (opcion == 2) {
+      RunSchedulingMenu();
     }
-
-    size_t size = AskInstanceSize();
-    int experimentos = 1;
-    if (modo == 1) { 
-      experimentos = AskNumberOfExperiments();
-    }
-
-    if (modo == 2) {  
-      EjecutarDebugOrdenacion(algoritmo, size);
-    } else { 
-      EjecutarNormalOrdenacion(algoritmo, size, experimentos);
-    }
-
-    std::cout << "\n=== EJECUCIÓN DE SCHEDULING ===\n";
-    std::string archivo;
-    std::cout << "Ingrese ruta del archivo JSON de Scheduling: ";
-    std::cin >> archivo;
-
-    try {
-      if (modo == 2) {
-        EjecutarDebugScheduling(archivo);
-      } else {
-        EjecutarNormalScheduling(archivo);
-      }
-    } catch (const std::exception& e) {
-      std::cout << "Error al ejecutar Scheduling: " << e.what() << std::endl;
-    }
-    std::cout << "\nEjecución completa.\n";
   }
   return 0;
 }
