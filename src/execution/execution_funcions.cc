@@ -16,6 +16,7 @@
 #include "../generators/GeneradorVectores.h"
 
 #include <iostream>
+#include <fstream>
 
 /**
  * @brief Ejecuta algoritmos de ordenación en modo debug.
@@ -119,4 +120,120 @@ void EjecutarNormalScheduling(const std::string& archivo) {
   double tiempo = MedidorTiempos::medir<SchedulingDyV, InstanciaScheduling, SolucionScheduling>(dyv, instancia);
 
   std::cout << "Tiempo de ejecución SchedulingDyV: " << tiempo << " ms\n";
+}
+
+/**
+ * @brief Ejecuta algoritmos de ordenación en modo debug.
+ *
+ * Muestra la instancia generada y los resultados de los algoritmos.
+ *
+ * @param algoritmo Código del algoritmo (1=MergeSort, 2=QuickSort, 3=Ambos)
+ * @param size Tamaño de la instancia a generar
+ * @param archivo_salida Archivo de salida de la solución
+ */
+void EjecutarDebugOrdenacion(int algoritmo, size_t size, const std::string& archivo_salida) {
+  std::ofstream file(archivo_salida);
+  if (!file.is_open()) {
+    std::cerr << "Error: no se pudo abrir '" << archivo_salida << "'\n";
+    return;
+  }
+  GeneradorVectores<int> generador(size, 0, 100);
+  auto instanciaBase = generador.generar();
+  auto* instancia = dynamic_cast<InstanciaVector<int>*>(instanciaBase.get());
+
+  file << "Instancia generada:\n";
+  instancia->mostrar(file);
+  file << "\n\n";
+
+  if (algoritmo == 1 || algoritmo == 3) {
+    MergeSort<int> ms;
+    auto sol = ms.ejecutar(*instancia);
+    file << "Resultado MergeSort:\n";
+    sol.mostrar(file);
+    file << "\n";
+  }
+  if (algoritmo == 2 || algoritmo == 3) {
+    QuickSort<int> qs;
+    auto sol = qs.ejecutar(*instancia);
+    file << "Resultado QuickSort:\n";
+    sol.mostrar(file);
+    file << "\n";
+  }
+  std::cout << "Resultados guardados en: " << archivo_salida << "\n";
+}
+
+/**
+ * @brief Ejecuta algoritmos de ordenación en modo normal y mide tiempos.
+ *
+ * Realiza múltiples experimentos y muestra los resultados en una tabla.
+ *
+ * @param algoritmo Código del algoritmo (1=MergeSort, 2=QuickSort, 3=Ambos)
+ * @param size Tamaño de la instancia a generar
+ * @param experimentos Número de experimentos a ejecutar
+ * @param archivo_salida Archivo de salida de la solución
+ */
+void EjecutarNormalOrdenacion(int algoritmo, size_t size, int experimentos, const std::string& archivo_salida) {
+  TablaResultados tabla;
+  for (int i = 0; i < experimentos; ++i) {
+    GeneradorVectores<int> generador(size, 0, 10000);
+    auto instanciaBase = generador.generar();
+    auto* instancia = dynamic_cast<InstanciaVector<int>*>(instanciaBase.get());
+    if (algoritmo == 1 || algoritmo == 3) {
+      MergeSort<int> ms;
+      double t = MedidorTiempos::medir<MergeSort<int>, InstanciaVector<int>, SolucionVector<int>>(ms, *instancia);
+      tabla.agregarResultado(ms.name(), size, t);
+    }
+    if (algoritmo == 2 || algoritmo == 3) {
+      QuickSort<int> qs;
+      double t = MedidorTiempos::medir<QuickSort<int>, InstanciaVector<int>, SolucionVector<int>>(qs, *instancia);
+      tabla.agregarResultado(qs.name(), size, t);
+    }
+  }
+  tabla.guardar(archivo_salida);
+}
+
+/**
+ * @brief Ejecuta el algoritmo SchedulingDyV en modo debug.
+ *
+ * Muestra la instancia cargada y la solución obtenida.
+ *
+ * @param archivo Ruta al archivo JSON de la instancia
+ * @param archivo_salida Archivo de salida de la solución
+ */
+void EjecutarDebugScheduling(const std::string& archivo, const std::string& archivo_salida) {
+  std::ofstream file(archivo_salida);
+  if (!file.is_open()) {
+    std::cerr << "Error: no se pudo abrir '" << archivo_salida << "'\n";
+    return;
+  }
+  auto instancia = SchedulingParser::parse(archivo);
+  file << "Instancia Scheduling cargada:\n";
+  instancia.mostrar(file);
+
+  SchedulingDyV dyv;
+  auto solucion = dyv.ejecutar(instancia);
+  file << "\nSolucion obtenida:\n";
+  solucion.mostrar(file);
+  std::cout << "Resultados guardados en: " << archivo_salida << "\n";
+}
+
+/**
+ * @brief Ejecuta el algoritmo SchedulingDyV en modo normal.
+ *
+ * Mide el tiempo de ejecución sobre la instancia cargada desde archivo.
+ *
+ * @param archivo Ruta al archivo JSON de la instancia
+ * @param archivo_salida Archivo de salida de la solución
+ */
+void EjecutarNormalScheduling(const std::string& archivo, const std::string& archivo_salida) {
+  std::ofstream file(archivo_salida);
+  if (!file.is_open()) {
+    std::cerr << "Error: no se pudo abrir '" << archivo_salida << "'\n";
+    return;
+  }
+  auto instancia = SchedulingParser::parse(archivo);
+  SchedulingDyV dyv;
+  double tiempo = MedidorTiempos::medir<SchedulingDyV, InstanciaScheduling, SolucionScheduling>(dyv, instancia);
+  file << "Tiempo de ejecucion SchedulingDyV: " << tiempo << " ms\n";
+  std::cout << "Resultados guardados en: " << archivo_salida << "\n";
 }

@@ -18,6 +18,7 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 
 /**
  * @brief Clase para almacenar y mostrar resultados de tiempo de algoritmos.
@@ -48,6 +49,27 @@ class TablaResultados {
                 << std::setw(10) << r.size
                 << std::setw(12) << r.tiempo << "\n";
     }
+  }
+
+  /**
+   * @brief Método auxiliar de guardado de tabla
+   * @param filename archivo donde guardar la tabla
+   */
+  void guardar(const std::string& filename) const {
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+      std::cerr << "Error: no se pudo abrir '" << filename << "'\n";
+      return;
+    }
+    file << std::left << std::setw(15) << "Algoritmo"
+        << std::setw(10) << "Tamano"
+        << std::setw(12) << "Tiempo(ms)" << "\n";
+    file << "---------------------------------------\n";
+    for (const auto& r : resultados)
+      file << std::left << std::setw(15) << r.algoritmo
+          << std::setw(10) << r.size
+          << std::setw(12) << r.tiempo << "\n";
+    std::cout << "Resultados guardados en: " << filename << "\n";
   }
 
  private:

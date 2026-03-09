@@ -30,6 +30,7 @@ int AskNumberOfExperiments();
 // Ejecuciones completas
 void RunSortingMenu();
 void RunSchedulingMenu();
+std::string AskSaveOption();
 
 #endif
 
