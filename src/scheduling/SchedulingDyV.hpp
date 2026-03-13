@@ -31,12 +31,22 @@
  * Combinación: concatenar planes y sumar scores parciales.
  */
 class SchedulingDyV : public DivideYVenceras<InstanciaScheduling, SolucionScheduling> {
+
+  private:
+
+    std::unique_ptr<
+    Algoritmo<InstanciaScheduling, SolucionScheduling>
+    > smallSolver_;
+
  public:
   /**
    * @brief Devuelve el nombre del algoritmo
    * @return const char* con el nombre
    */
   const char* name() const override { return "SchedulingDyV"; }
+
+  SchedulingDyV(std::unique_ptr<Algoritmo<InstanciaScheduling,SolucionScheduling>> smallSolver) : smallSolver_(std::move(smallSolver)) {}
+
 
  protected:
   /**
@@ -60,31 +70,9 @@ class SchedulingDyV : public DivideYVenceras<InstanciaScheduling, SolucionSchedu
    * @return SolucionScheduling con la asignación de turnos
    */
   SolucionScheduling solveSmall(const InstanciaScheduling& inst) const override {
-    const int empleados = inst.getEmployees();
-    const int turnos    = inst.getShifts();
-
-    SolucionScheduling sol(1, empleados);
-    for (int empleado = 0; empleado < empleados; ++empleado) {
-      const auto& diasDescanso = inst.getFreeDays(empleado);
-      bool descansa = std::find(diasDescanso.begin(),diasDescanso.end(), 0) != diasDescanso.end();
-
-      if (descansa) {
-        sol.set(0, empleado, -1);  
-        continue;
-      }
-
-      int mejorTurno = 0;
-      int mejorSat   = inst.getSatisfaction(empleado, 0, 0);
-      for (int turno = 1; turno < turnos; ++turno) {
-        int s = inst.getSatisfaction(empleado, 0, turno);
-        if (s > mejorSat) { mejorSat = s; mejorTurno = turno; }
-      }
-      sol.set(0, empleado, mejorTurno);
-    }
-
-    sol.setScore(calcularScore(sol, inst));
-    return sol;
+    return smallSolver_->ejecutar(inst);
   }
+
 
   /**
    * @brief Divide la instancia en dos subproblemas por mitad de días.
